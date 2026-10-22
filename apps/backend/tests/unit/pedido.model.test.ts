@@ -7,8 +7,8 @@ describe('Pedido', () => {
   it('representa un pedido con su id, items y estado', () => {
     const pedido = new Pedido(1, items);
 
-    expect(pedido.id).toBe(1);
-    expect(pedido.items).toEqual(items);
-    expect(pedido.estado).toBe('pendiente');
+    expect(pedido.getId()).toBe(1);
+    expect(pedido.getItems()).toEqual(items);
+    expect(pedido.getEstado()).toBe('pendiente');
   });
 });
