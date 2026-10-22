@@ -5,6 +5,12 @@ export interface PedidoItem {
   cantidad: number;
 }
 
+export interface ProductoConPrecio {
+  calcularPrecio(): number;
+}
+
+export type BuscarProducto = (id: number) => ProductoConPrecio;
+
 export class Pedido {
   private readonly id: number;
   private readonly items: PedidoItem[];
@@ -30,5 +36,13 @@ export class Pedido {
 
   getEstado(): EstadoPedido {
     return this.estado;
+  }
+
+  calcularTotal(buscarProducto: BuscarProducto): number {
+    return this.items.reduce(
+      (total, item) =>
+        total + buscarProducto(item.productoId).calcularPrecio() * item.cantidad,
+      0,
+    );
   }
 }
