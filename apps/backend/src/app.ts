@@ -12,6 +12,9 @@ export function createApp(databasePath?: string) {
   app.get("/health", (_request, response) => {
     response.status(200).json({ status: "ok" });
   });
+  app.get("/pedidos", (_request, response) => {
+    response.status(200).json([]);
+  });
 
   return app;
 }
