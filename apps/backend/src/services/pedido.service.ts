@@ -23,8 +23,11 @@ export class PedidoService {
     }));
   }
 
-  obtenerPorId(id: number): PedidoConTotal {
-    const pedido = this.pedidos.obtenerPorId(id)!;
+  obtenerPorId(id: number): PedidoConTotal | undefined {
+    const pedido = this.pedidos.obtenerPorId(id);
+
+    if (!pedido) return undefined;
+
     return {
       id: pedido.getId(),
       items: pedido.getItems(),
