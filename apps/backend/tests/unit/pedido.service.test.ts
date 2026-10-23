@@ -7,12 +7,10 @@ describe('PedidoService', () => {
   const pedidosRepository = {
     obtenerTodos: vi.fn(() => [pedido]),
   };
-  const productosRepository = {
-    obtenerPorId: vi.fn(() => ({ calcularPrecio: () => 150 })),
-  };
+  const buscarProducto = vi.fn(() => ({ calcularPrecio: () => 150 }));
 
   it('obtiene todos los pedidos con su total calculado', () => {
-    const pedidoService = new PedidoService(pedidosRepository, productosRepository);
+    const pedidoService = new PedidoService(pedidosRepository, buscarProducto);
 
     expect(pedidoService.obtenerTodos()).toEqual([
       {
