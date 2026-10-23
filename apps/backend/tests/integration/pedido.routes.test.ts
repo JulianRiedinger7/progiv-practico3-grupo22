@@ -20,4 +20,20 @@ describe('Rutas de pedidos', () => {
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual([]);
   });
+
+  it('GET /pedidos retorna los pedidos existentes', async () => {
+    const resultado = app.locals.db.prepare('INSERT INTO pedidos DEFAULT VALUES').run();
+
+    const respuesta = await request(app).get('/pedidos');
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body).toEqual([
+      {
+        id: Number(resultado.lastInsertRowid),
+        items: [],
+        estado: 'pendiente',
+        total: 0,
+      },
+    ]);
+  });
 });
