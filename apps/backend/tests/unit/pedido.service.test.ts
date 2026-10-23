@@ -35,4 +35,11 @@ describe('PedidoService', () => {
     });
     expect(pedidosRepository.obtenerPorId).toHaveBeenCalledWith(1);
   });
+
+  it('devuelve undefined cuando el pedido no existe', () => {
+    const pedidoService = new PedidoService(pedidosRepository, buscarProducto);
+
+    expect(pedidoService.obtenerPorId(99)).toBeUndefined();
+    expect(pedidosRepository.obtenerPorId).toHaveBeenCalledWith(99);
+  });
 });
