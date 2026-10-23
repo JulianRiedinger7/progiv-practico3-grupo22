@@ -1,4 +1,10 @@
-import type { BuscarProducto, EstadoPedido, NuevoPedido, PedidoItem } from '../models/pedido';
+import type {
+  BuscarProducto,
+  EstadoPedido,
+  NuevoPedido,
+  PedidoItem,
+  ProductoConPrecio,
+} from '../models/pedido';
 import type { IPedidoRepository } from '../repositories/pedido.repository';
 
 export interface PedidoConTotal {
@@ -43,7 +49,13 @@ export class PedidoService implements IPedidoService {
   }
 
   crear(pedido: NuevoPedido): PedidoConTotal {
-    pedido.items.forEach((item) => this.buscarProducto(item.productoId));
+    const productos = new Map<number, ProductoConPrecio>();
+
+    pedido.items.forEach((item) => {
+      if (!productos.has(item.productoId)) {
+        productos.set(item.productoId, this.buscarProducto(item.productoId));
+      }
+    });
 
     const nuevo = this.pedidos.crear(pedido);
 
@@ -51,7 +63,7 @@ export class PedidoService implements IPedidoService {
       id: nuevo.getId(),
       items: nuevo.getItems(),
       estado: nuevo.getEstado(),
-      total: nuevo.calcularTotal(this.buscarProducto),
+      total: nuevo.calcularTotal((id) => productos.get(id)!),
     };
   }
 }
