@@ -1,18 +1,25 @@
-import { describe, expect, it, vi } from 'vitest';
-import { Pedido } from '../../src/models/pedido';
-import { PedidoService } from '../../src/services/pedido.service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { BuscarProducto, Pedido, type NuevoPedido } from '../../src/models/pedido';
+import { IPedidoService, PedidoService } from '../../src/services/pedido.service';
+import { IPedidoRepository } from '../../src/repositories/pedido.repository';
 
 describe('PedidoService', () => {
   const pedido = new Pedido(1, [{ productoId: 10, cantidad: 2 }]);
-  const pedidosRepository = {
-    obtenerTodos: vi.fn(() => [pedido]),
-    obtenerPorId: vi.fn((id: number) => (id === pedido.getId() ? pedido : undefined)),
-  };
-  const buscarProducto = vi.fn(() => ({ calcularPrecio: () => 150 }));
+  let pedidosRepository: IPedidoRepository;
+  let buscarProducto: BuscarProducto;
+  let pedidoService: IPedidoService;
+
+  beforeEach(() => {
+    pedidosRepository = {
+      obtenerTodos: vi.fn(() => [pedido]),
+      obtenerPorId: vi.fn((id: number) => (id === pedido.getId() ? pedido : undefined)),
+      crear: vi.fn((nuevo: NuevoPedido) => new Pedido(2, nuevo.items, nuevo.estado)),
+    };
+    buscarProducto = vi.fn((_id: number) => ({ calcularPrecio: () => 150 }));
+    pedidoService = new PedidoService(pedidosRepository, buscarProducto);
+  });
 
   it('obtiene todos los pedidos con su total calculado', () => {
-    const pedidoService = new PedidoService(pedidosRepository, buscarProducto);
-
     expect(pedidoService.obtenerTodos()).toEqual([
       {
         id: 1,
@@ -25,8 +32,6 @@ describe('PedidoService', () => {
   });
 
   it('obtiene un pedido por su id con su total calculado', () => {
-    const pedidoService = new PedidoService(pedidosRepository, buscarProducto);
-
     expect(pedidoService.obtenerPorId(1)).toEqual({
       id: 1,
       items: [{ productoId: 10, cantidad: 2 }],
@@ -37,21 +42,12 @@ describe('PedidoService', () => {
   });
 
   it('devuelve undefined cuando el pedido no existe', () => {
-    const pedidoService = new PedidoService(pedidosRepository, buscarProducto);
-
     expect(pedidoService.obtenerPorId(99)).toBeUndefined();
     expect(pedidosRepository.obtenerPorId).toHaveBeenCalledWith(99);
   });
 
   it('crea un pedido y lo devuelve con su total calculado', () => {
     const nuevoPedido = { items: [{ productoId: 15, cantidad: 2 }] };
-    const pedidoCreado = new Pedido(2, nuevoPedido.items);
-    const pedidoRepository = {
-      crear: vi.fn(() => pedidoCreado),
-      obtenerTodos: vi.fn(() => []),
-      obtenerPorId: vi.fn(() => undefined),
-    };
-    const pedidoService = new PedidoService(pedidoRepository, buscarProducto);
 
     expect(pedidoService.crear(nuevoPedido)).toEqual({
       id: 2,
@@ -59,6 +55,6 @@ describe('PedidoService', () => {
       estado: 'pendiente',
       total: 300,
     });
-    expect(pedidoRepository.crear).toHaveBeenCalledWith(nuevoPedido);
+    expect(pedidosRepository.crear).toHaveBeenCalledWith(nuevoPedido);
   });
 });

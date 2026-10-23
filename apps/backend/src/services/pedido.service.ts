@@ -8,7 +8,13 @@ export interface PedidoConTotal {
   total: number;
 }
 
-export class PedidoService {
+export interface IPedidoService {
+  obtenerTodos(): PedidoConTotal[];
+  obtenerPorId(id: number): PedidoConTotal | undefined;
+  crear(pedido: NuevoPedido): PedidoConTotal;
+}
+
+export class PedidoService implements IPedidoService {
   constructor(
     private readonly pedidos: IPedidoRepository,
     private readonly buscarProducto: BuscarProducto,
