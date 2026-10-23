@@ -51,4 +51,10 @@ describe('Rutas de pedidos', () => {
       total: 0,
     });
   });
+
+  it('GET /pedidos/:id retorna 404 si el pedido no existe', async () => {
+    const respuesta = await request(app).get('/pedidos/999');
+
+    expect(respuesta.status).toBe(404);
+  });
 });
