@@ -36,4 +36,19 @@ describe('Rutas de pedidos', () => {
       },
     ]);
   });
+
+  it('GET /pedidos/:id retorna el pedido existente', async () => {
+    const resultado = app.locals.db.prepare('INSERT INTO pedidos DEFAULT VALUES').run();
+    const id = Number(resultado.lastInsertRowid);
+
+    const respuesta = await request(app).get(`/pedidos/${id}`);
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body).toEqual({
+      id,
+      items: [],
+      estado: 'pendiente',
+      total: 0,
+    });
+  });
 });
