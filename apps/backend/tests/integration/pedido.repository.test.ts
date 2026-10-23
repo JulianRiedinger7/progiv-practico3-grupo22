@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createDb } from '../../src/db/connection';
 import { initializeSchema } from '../../src/db/schema';
-import { Pedido } from '../../src/models/pedido';
+import { Pedido, type NuevoPedido } from '../../src/models/pedido';
 import { PedidoRepository } from '../../src/repositories/pedido.repository';
 
 describe('PedidoRepository', () => {
@@ -59,5 +59,26 @@ describe('PedidoRepository', () => {
     expect(pedido?.getId()).toBe(1);
     expect(pedido?.getEstado()).toBe('entregado');
     expect(pedido?.getItems()).toEqual([{ productoId: 15, cantidad: 2 }]);
+  });
+
+  it('crea el pedido y persiste sus items con estado pendiente por defecto', () => {
+    db.exec('INSERT INTO productos (id) VALUES (15)');
+    const nuevoPedido: NuevoPedido = {
+      items: [{ productoId: 15, cantidad: 2 }],
+    };
+
+    const pedido = pedidoRepository.crear(nuevoPedido);
+
+    expect(pedido).toBeInstanceOf(Pedido);
+    expect(pedido.getId()).toBe(1);
+    expect(pedido.getEstado()).toBe('pendiente');
+    expect(pedido.getItems()).toEqual([{ productoId: 15, cantidad: 2 }]);
+    expect(db.prepare('SELECT id, estado FROM pedidos').get()).toEqual({
+      id: 1,
+      estado: 'pendiente',
+    });
+    expect(
+      db.prepare('SELECT id, pedido_id, producto_id, cantidad FROM pedido_items').all(),
+    ).toEqual([{ id: 1, pedido_id: 1, producto_id: 15, cantidad: 2 }]);
   });
 });
