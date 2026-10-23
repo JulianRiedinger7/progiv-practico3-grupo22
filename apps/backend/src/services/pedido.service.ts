@@ -1,4 +1,4 @@
-import type { BuscarProducto, EstadoPedido, PedidoItem } from '../models/pedido';
+import type { BuscarProducto, EstadoPedido, NuevoPedido, PedidoItem } from '../models/pedido';
 import type { IPedidoRepository } from '../repositories/pedido.repository';
 
 export interface PedidoConTotal {
@@ -33,6 +33,17 @@ export class PedidoService {
       items: pedido.getItems(),
       estado: pedido.getEstado(),
       total: pedido.calcularTotal(this.buscarProducto),
+    };
+  }
+
+  crear(pedido: NuevoPedido): PedidoConTotal {
+    const nuevo = this.pedidos.crear(pedido);
+
+    return {
+      id: nuevo.getId(),
+      items: nuevo.getItems(),
+      estado: nuevo.getEstado(),
+      total: nuevo.calcularTotal(this.buscarProducto),
     };
   }
 }

@@ -5,6 +5,11 @@ export interface PedidoItem {
   cantidad: number;
 }
 
+export interface NuevoPedido {
+  items: PedidoItem[];
+  estado?: EstadoPedido;
+}
+
 export interface ProductoConPrecio {
   calcularPrecio(): number;
 }
