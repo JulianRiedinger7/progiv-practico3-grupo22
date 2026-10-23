@@ -43,6 +43,8 @@ export class PedidoService implements IPedidoService {
   }
 
   crear(pedido: NuevoPedido): PedidoConTotal {
+    pedido.items.forEach((item) => this.buscarProducto(item.productoId));
+
     const nuevo = this.pedidos.crear(pedido);
 
     return {
