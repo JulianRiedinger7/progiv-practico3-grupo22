@@ -56,5 +56,6 @@ describe('Rutas de pedidos', () => {
     const respuesta = await request(app).get('/pedidos/999');
 
     expect(respuesta.status).toBe(404);
+    expect(respuesta.body).toEqual({ error: 'Pedido no encontrado' });
   });
 });
