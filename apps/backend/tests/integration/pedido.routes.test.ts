@@ -63,5 +63,14 @@ describe('Rutas de pedidos', () => {
     const respuesta = await request(app).post('/pedidos').send({ items: [] });
 
     expect(respuesta.status).toBe(400);
+    expect(respuesta.body).toEqual({
+      error: 'Datos del pedido inválidos',
+      detalles: [
+        {
+          campo: 'items',
+          mensaje: 'El pedido debe incluir al menos un ítem',
+        },
+      ],
+    });
   });
 });
