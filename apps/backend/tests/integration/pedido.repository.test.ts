@@ -43,4 +43,21 @@ describe('PedidoRepository', () => {
   it('devuelve undefined cuando no existe un pedido con ese id', () => {
     expect(pedidoRepository.obtenerPorId(99)).toBeUndefined();
   });
+
+  it('devuelve el pedido guardado por id', () => {
+    db.exec(`
+      INSERT INTO productos (id) VALUES (15);
+      INSERT INTO pedidos (id, estado) VALUES (1, 'entregado');
+      INSERT INTO pedido_items (pedido_id, producto_id, cantidad)
+      VALUES (1, 15, 2);
+    `);
+
+    const pedido = pedidoRepository.obtenerPorId(1);
+
+    expect(pedido).toBeDefined();
+    expect(pedido).toBeInstanceOf(Pedido);
+    expect(pedido?.getId()).toBe(1);
+    expect(pedido?.getEstado()).toBe('entregado');
+    expect(pedido?.getItems()).toEqual([{ productoId: 15, cantidad: 2 }]);
+  });
 });
