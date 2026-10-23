@@ -39,4 +39,8 @@ describe('PedidoRepository', () => {
     expect(pedidos[0].getEstado()).toBe('entregado');
     expect(pedidos[0].getItems()).toEqual([{ productoId: 15, cantidad: 2 }]);
   });
+
+  it('devuelve undefined cuando no existe un pedido con ese id', () => {
+    expect(pedidoRepository.obtenerPorId(99)).toBeUndefined();
+  });
 });
