@@ -57,4 +57,16 @@ describe('PedidoService', () => {
     });
     expect(pedidosRepository.crear).toHaveBeenCalledWith(nuevoPedido);
   });
+
+  it('no guarda el pedido si falla la búsqueda de un producto', () => {
+    const nuevoPedido = { items: [{ productoId: 99, cantidad: 1 }] };
+    const pedidoServiceConProductoInexistente = new PedidoService(pedidosRepository, () => {
+      throw new Error('El pedido contiene productos inexistentes');
+    });
+
+    expect(() => pedidoServiceConProductoInexistente.crear(nuevoPedido)).toThrow(
+      'El pedido contiene productos inexistentes',
+    );
+    expect(pedidosRepository.crear).not.toHaveBeenCalled();
+  });
 });
