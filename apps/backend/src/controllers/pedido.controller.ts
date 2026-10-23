@@ -11,6 +11,8 @@ export class PedidoController {
   obtenerPorId = (req: Request, res: Response): Response => {
     const pedido = this.pedidos.obtenerPorId(Number(req.params.id));
 
+    if (!pedido) return res.sendStatus(404);
+
     return res.status(200).json(pedido);
   };
 }
