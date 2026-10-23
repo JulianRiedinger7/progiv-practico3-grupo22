@@ -1,7 +1,10 @@
 import express from 'express';
+import { PedidoController } from './controllers/pedido.controller';
 import { createDb } from './db/connection';
 import { initializeSchema } from './db/schema';
 import { PedidoRepository } from './repositories/pedido.repository';
+import { crearPedidoRouter } from './routes/pedido.routes';
+import { PedidoService } from './services/pedido.service';
 
 export function createApp(databasePath?: string) {
   const app = express();
@@ -9,21 +12,14 @@ export function createApp(databasePath?: string) {
   const db = createDb(databasePath);
   initializeSchema(db);
   app.locals.db = db;
-  const pedidos = new PedidoRepository(db);
-  app.use(express.json());
-  app.get('/health', (_request, response) => {
-    response.status(200).json({ status: 'ok' });
+  const pedidoRepository = new PedidoRepository(db);
+  const pedidoService = new PedidoService(pedidoRepository, (id) => {
+    throw new Error(`No se configuró la búsqueda del producto ${id}`);
   });
-  app.get('/pedidos', (_request, response) => {
-    const respuesta = pedidos.obtenerTodos().map((pedido) => ({
-      id: pedido.getId(),
-      items: pedido.getItems(),
-      estado: pedido.getEstado(),
-      total: 0,
-    }));
+  const pedidoController = new PedidoController(pedidoService);
 
-    response.status(200).json(respuesta);
-  });
+  app.use(express.json());
+  app.use('/pedidos', crearPedidoRouter(pedidoController));
 
   return app;
 }

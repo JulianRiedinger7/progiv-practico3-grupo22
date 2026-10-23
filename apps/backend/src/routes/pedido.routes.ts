@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { PedidoController } from '../controllers/pedido.controller';
+
+export function crearPedidoRouter(controller: PedidoController) {
+  const router = Router();
+
+  router.get('/', controller.obtenerTodos);
+
+  return router;
+}
