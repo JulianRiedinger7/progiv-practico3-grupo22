@@ -58,4 +58,10 @@ describe('Rutas de pedidos', () => {
     expect(respuesta.status).toBe(404);
     expect(respuesta.body).toEqual({ error: 'Pedido no encontrado' });
   });
+
+  it('POST /pedidos rechaza un pedido sin items con error 400', async () => {
+    const respuesta = await request(app).post('/pedidos').send({ items: [] });
+
+    expect(respuesta.status).toBe(400);
+  });
 });
