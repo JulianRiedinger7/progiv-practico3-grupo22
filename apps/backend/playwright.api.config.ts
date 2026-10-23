@@ -16,7 +16,7 @@ export default defineConfig({
     ? undefined
     : {
         command: "pnpm start:test",
-        url: `${baseURL}/health`,
+        url: `${baseURL}/pedidos`,
         reuseExistingServer: false,
         env: {
           SQLITE_DATABASE_PATH: ":memory:",
