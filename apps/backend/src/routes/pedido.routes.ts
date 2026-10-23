@@ -6,6 +6,7 @@ export function crearPedidoRouter(controller: PedidoController) {
 
   router.get('/', controller.obtenerTodos);
   router.get('/:id', controller.obtenerPorId);
+  router.post('/', controller.crear);
 
   return router;
 }
