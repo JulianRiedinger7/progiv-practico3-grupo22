@@ -5,6 +5,7 @@ export function crearPedidoRouter(controller: PedidoController) {
   const router = Router();
 
   router.get('/', controller.obtenerTodos);
+  router.get('/:id', controller.obtenerPorId);
 
   return router;
 }

@@ -7,4 +7,10 @@ export class PedidoController {
   obtenerTodos = (_req: Request, res: Response): Response => {
     return res.status(200).json(this.pedidos.obtenerTodos());
   };
+
+  obtenerPorId = (req: Request, res: Response): Response => {
+    const pedido = this.pedidos.obtenerPorId(Number(req.params.id));
+
+    return res.status(200).json(pedido);
+  };
 }
