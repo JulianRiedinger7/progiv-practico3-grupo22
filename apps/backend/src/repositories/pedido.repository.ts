@@ -17,7 +17,7 @@ interface PedidoItemRow {
   cantidad: number;
 }
 
-export class PedidoRepository {
+export class PedidoRepository implements IPedidoRepository {
   constructor(private readonly db: Database.Database) {}
 
   obtenerTodos(): Pedido[] {
@@ -34,6 +34,23 @@ export class PedidoRepository {
     if (!pedido) return undefined;
 
     return this.mapearPedido(pedido);
+  }
+
+  crear(pedido: NuevoPedido): Pedido {
+    const resultado = pedido.estado
+      ? this.db.prepare('INSERT INTO pedidos (estado) VALUES (?)').run(pedido.estado)
+      : this.db.prepare('INSERT INTO pedidos DEFAULT VALUES').run();
+
+    const id = Number(resultado.lastInsertRowid);
+    const insertarItem = this.db.prepare(
+      'INSERT INTO pedido_items (pedido_id, producto_id, cantidad) VALUES (?, ?, ?)',
+    );
+
+    pedido.items.forEach((item) => {
+      insertarItem.run(id, item.productoId, item.cantidad);
+    });
+
+    return new Pedido(id, pedido.items, pedido.estado);
   }
 
   private mapearPedido(pedido: PedidoRow): Pedido {
