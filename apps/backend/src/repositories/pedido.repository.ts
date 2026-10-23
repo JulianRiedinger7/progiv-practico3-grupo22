@@ -37,7 +37,22 @@ export class PedidoRepository {
     });
   }
 
-  obtenerPorId(id: number): undefined {
-    return undefined;
+  obtenerPorId(id: number): Pedido | undefined {
+    const pedido = this.db.prepare('SELECT id, estado FROM pedidos WHERE id = ?').get(id) as
+      | PedidoRow
+      | undefined;
+
+    if (!pedido) return undefined;
+
+    const items = this.db
+      .prepare('SELECT producto_id, cantidad FROM pedido_items WHERE pedido_id = ?')
+      .all(pedido.id) as PedidoItemRow[];
+
+    const itemsPedido: PedidoItem[] = items.map((item) => ({
+      productoId: item.producto_id,
+      cantidad: item.cantidad,
+    }));
+
+    return new Pedido(pedido.id, itemsPedido, pedido.estado);
   }
 }
