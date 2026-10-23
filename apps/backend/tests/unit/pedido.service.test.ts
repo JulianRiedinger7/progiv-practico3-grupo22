@@ -42,4 +42,23 @@ describe('PedidoService', () => {
     expect(pedidoService.obtenerPorId(99)).toBeUndefined();
     expect(pedidosRepository.obtenerPorId).toHaveBeenCalledWith(99);
   });
+
+  it('crea un pedido y lo devuelve con su total calculado', () => {
+    const nuevoPedido = { items: [{ productoId: 15, cantidad: 2 }] };
+    const pedidoCreado = new Pedido(2, nuevoPedido.items);
+    const pedidoRepository = {
+      crear: vi.fn(() => pedidoCreado),
+      obtenerTodos: vi.fn(() => []),
+      obtenerPorId: vi.fn(() => undefined),
+    };
+    const pedidoService = new PedidoService(pedidoRepository, buscarProducto);
+
+    expect(pedidoService.crear(nuevoPedido)).toEqual({
+      id: 2,
+      items: [{ productoId: 15, cantidad: 2 }],
+      estado: 'pendiente',
+      total: 300,
+    });
+    expect(pedidoRepository.crear).toHaveBeenCalledWith(nuevoPedido);
+  });
 });
