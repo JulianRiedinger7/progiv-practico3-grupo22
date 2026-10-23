@@ -36,4 +36,8 @@ export class PedidoRepository {
       return new Pedido(pedido.id, itemsPedido, pedido.estado);
     });
   }
+
+  obtenerPorId(id: number): undefined {
+    return undefined;
+  }
 }
