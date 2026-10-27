@@ -23,7 +23,9 @@ La API queda en `http://localhost:3000/health` y Vite en `http://localhost:5173`
 pnpm docker:up
 ```
 
-Compose levanta el backend y el frontend. El archivo de SQLite se guarda en el volumen `sqlite_data`, para que los datos sobrevivan al reemplazo o detención de los contenedores.
+Compose levanta el backend y el frontend en contenedores separados, usando Vite para servir el frontend y `tsx` para ejecutar el backend en desarrollo. Los puertos publicados son `http://localhost:5173` para el frontend y `http://localhost:3000` para la API.
+
+El archivo de SQLite se guarda en el volumen `sqlite_data`, para que los datos sobrevivan al reemplazo o detención de los contenedores.
 
 Para detener los servicios: `pnpm docker:down`. Esto conserva el volumen y los datos. `docker compose down -v` también borra los volúmenes y, por lo tanto, los datos de SQLite.
 
@@ -39,8 +41,6 @@ No hay modelos ni esquema de negocio al inicio. `new Database(path)` crea/abre e
 - `pnpm test:integration`: Vitest para repositorios y rutas con SQLite real en memoria; Supertest sirve para probar la app Express.
 - `pnpm test:e2e:api`: Playwright Test contra el backend por HTTP.
 - `pnpm test:e2e:web`: Playwright Test en Chromium; levanta el frontend y el backend de prueba.
-
-En Docker se pueden ejecutar `pnpm docker:test:unit`, `pnpm docker:test:integration`, `pnpm docker:test:e2e:api` y `pnpm docker:test:e2e:web`.
 
 Para cada funcionalidad, escriban primero el test del comportamiento que quieren implementar. Un test unitario del servicio puede inyectar un mock; la persistencia del repositorio se verifica con SQLite real; Playwright queda para unos pocos flujos completos. No se crea una implementación genérica de repositorios por adelantado.
 
