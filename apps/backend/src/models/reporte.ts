@@ -12,5 +12,5 @@ interface PedidoItems {
 }
 
 export class Reporte {
-    
+   
 }
