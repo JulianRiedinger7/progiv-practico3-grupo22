@@ -15,7 +15,7 @@ describe('Reporte', () => {
       calcularPrecio: () => precios[productoId],
     });
 
-    expect(reporte.calcularTotal(buscarProducto)).toBe(3250);
+    expect(reporte.calcularFacturacion(buscarProducto)).toBe(3000);
   });
 
 
