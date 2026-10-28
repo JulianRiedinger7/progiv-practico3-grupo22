@@ -4,6 +4,7 @@ export interface ItemReporte {
 }
 
 export interface PedidoParaReporte {
+  estado: string;
   items: ItemReporte[];
 }
 
@@ -18,6 +19,7 @@ export class Reporte {
 
     constructor(pedidos: PedidoParaReporte[] = []) {
     this.items = pedidos
+      .filter((pedido) => pedido.estado === 'entregado')
       .flatMap((pedido) => pedido.items);}
 
   calcularFacturacion(buscarProducto: BuscarProducto): number {
