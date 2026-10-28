@@ -3,6 +3,10 @@ export interface ItemReporte {
   cantidad: number;
 }
 
+export interface PedidoParaReporte {
+  items: ItemReporte[];
+}
+
 export interface ProductoConPrecio {
   calcularPrecio(): number;
 }
@@ -11,6 +15,10 @@ export type BuscarProducto = (productoId: number) => ProductoConPrecio;
 
 export class Reporte {
   items: ItemReporte[] = [];
+
+    constructor(pedidos: PedidoParaReporte[] = []) {
+    this.items = pedidos
+      .flatMap((pedido) => pedido.items);}
 
   calcularFacturacion(buscarProducto: BuscarProducto): number {
     return this.items.reduce(
