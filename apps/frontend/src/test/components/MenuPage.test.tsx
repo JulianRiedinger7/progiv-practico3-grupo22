@@ -1,11 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import MenuPage from './MenuPage';
+import MenuPage from '../../components/MenuPage';
 
 describe('MenuPage', () => {
   it('muestra el nombre de la cafetería como título principal', () => {
     render(<MenuPage />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Cafetería Origen' })).toBeInTheDocument();
+  });
+
+  it('muestra en el encabezado la mesa indicada en la URL', () => {
+    window.history.replaceState({}, '', '/?mesa=4');
+
+    render(<MenuPage />);
+
+    expect(screen.getByText('Mesa 4')).toBeInTheDocument();
   });
 });
