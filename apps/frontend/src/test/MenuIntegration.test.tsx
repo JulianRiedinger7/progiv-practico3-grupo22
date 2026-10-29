@@ -39,4 +39,16 @@ describe('MenuPage integración con API simulada', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando productos...');
   });
+
+  it('muestra un mensaje de error cuando la API responde con un error', async () => {
+    server.use(
+      http.get('*/productos', () => HttpResponse.json([], { status: 500 })),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudieron cargar los productos',
+    );
+  });
 });
