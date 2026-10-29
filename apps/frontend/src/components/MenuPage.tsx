@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import MenuHeader from './MenuHeader';
 import { listarProductos } from '../services/productosService';
 import type { Producto } from '../types/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
@@ -27,15 +28,7 @@ export default function MenuPage() {
     <main className='container py-5'>
       <div className='row justify-content-center'>
         <div className='col-lg-9'>
-          <header className='card border-0 bg-light shadow-sm mb-5'>
-            <div className='card-body p-4 p-md-5'>
-              <p className='small fw-semibold text-secondary text-uppercase mb-2'>Carta de la casa</p>
-              <h1 className='display-5 text-primary mb-0'>Cafetería Origen</h1>
-              {mesa !== null && (
-                <p className='badge bg-secondary fs-6 mt-3 mb-0'>Mesa {mesa}</p>
-              )}
-            </div>
-          </header>
+          <MenuHeader mesa={mesa} />
 
           <section aria-labelledby='menu-page-title'>
             <h2 id='menu-page-title' className='h3 text-primary border-bottom pb-3 mb-4'>
