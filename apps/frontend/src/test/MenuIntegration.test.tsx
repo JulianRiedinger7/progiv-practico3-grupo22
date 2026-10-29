@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { delay, http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import MenuPage from '../components/MenuPage';
@@ -50,5 +51,35 @@ describe('MenuPage integración con API simulada', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'No se pudieron cargar los productos',
     );
+  });
+
+  it('permite reintentar la carga de productos después de un error', async () => {
+    const user = userEvent.setup();
+    let cantidadDePeticiones = 0;
+
+    server.use(
+      http.get('*/productos', () => {
+        cantidadDePeticiones += 1;
+
+        if (cantidadDePeticiones === 1) {
+          return HttpResponse.json([], { status: 500 });
+        }
+
+        return HttpResponse.json([
+          { id: 1, nombre: 'Espresso pocillo brasil' },
+        ]);
+      }),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudieron cargar los productos',
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await screen.findByText('Espresso pocillo brasil')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
