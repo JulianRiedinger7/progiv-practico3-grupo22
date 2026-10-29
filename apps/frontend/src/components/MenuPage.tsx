@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Producto } from '../types/producto';
 
 export default function MenuPage() {
@@ -6,7 +6,10 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const cargarProductos = useCallback(() => {
+    setLoading(true);
+    setError(false);
+
     fetch('/productos')
       .then((response) => {
         if (!response.ok) throw new Error();
@@ -17,11 +20,22 @@ export default function MenuPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    cargarProductos();
+  }, [cargarProductos]);
+
   return (
     <main className='container py-5'>
       <h1>Cafetería Origen</h1>
       {loading && <p role='status'>Cargando productos...</p>}
-      {!loading && error && <p role='alert'>No se pudieron cargar los productos</p>}
+      {!loading && error && (
+        <>
+          <p role='alert'>No se pudieron cargar los productos</p>
+          <button type='button' className='btn-primary' onClick={cargarProductos}>
+            Reintentar
+          </button>
+        </>
+      )}
       {!loading && !error && productos.length === 0 && <p>No hay productos disponibles</p>}
       <ul>
         {productos.map((producto) => (
