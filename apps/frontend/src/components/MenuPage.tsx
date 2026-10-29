@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-
-type Producto = {
-  id: number;
-  nombre: string;
-};
+import type { Producto } from '../types/producto';
 
 export default function MenuPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
