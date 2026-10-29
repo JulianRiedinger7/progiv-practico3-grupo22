@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { listarProductos } from '../services/productosService';
 import type { Producto } from '../types/producto';
+import { leerMesaDesdeUrl } from '../utils/mesa';
 
 export default function MenuPage() {
+  const mesa = leerMesaDesdeUrl(window.location.search);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -29,6 +31,9 @@ export default function MenuPage() {
             <div className='card-body p-4 p-md-5'>
               <p className='small fw-semibold text-secondary text-uppercase mb-2'>Carta de la casa</p>
               <h1 className='display-5 text-primary mb-0'>Cafetería Origen</h1>
+              {mesa !== null && (
+                <p className='badge bg-secondary fs-6 mt-3 mb-0'>Mesa {mesa}</p>
+              )}
             </div>
           </header>
 
