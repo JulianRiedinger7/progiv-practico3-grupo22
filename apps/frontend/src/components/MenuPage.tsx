@@ -13,6 +13,7 @@ export default function MenuPage() {
   return (
     <main className='container py-5'>
       <h1>Cafetería Origen</h1>
+      {productos.length === 0 && <p>No hay productos disponibles</p>}
       <ul>
         {productos.map((producto) => (
           <li key={producto.id}>{producto.nombre}</li>
