@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { listarProductos } from '../services/productosService';
 import type { Producto } from '../types/producto';
 
 export default function MenuPage() {
@@ -10,12 +11,8 @@ export default function MenuPage() {
     setLoading(true);
     setError(false);
 
-    fetch('/productos')
-      .then((response) => {
-        if (!response.ok) throw new Error();
-        return response.json();
-      })
-      .then((productos: Producto[]) => setProductos(productos))
+    listarProductos()
+      .then(setProductos)
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
@@ -26,22 +23,47 @@ export default function MenuPage() {
 
   return (
     <main className='container py-5'>
-      <h1>Cafetería Origen</h1>
-      {loading && <p role='status'>Cargando productos...</p>}
-      {!loading && error && (
-        <>
-          <p role='alert'>No se pudieron cargar los productos</p>
-          <button type='button' className='btn-primary' onClick={cargarProductos}>
-            Reintentar
-          </button>
-        </>
-      )}
-      {!loading && !error && productos.length === 0 && <p>No hay productos disponibles</p>}
-      <ul>
-        {productos.map((producto) => (
-          <li key={producto.id}>{producto.nombre}</li>
-        ))}
-      </ul>
+      <div className='row justify-content-center'>
+        <div className='col-lg-9'>
+          <header className='card border-0 bg-light shadow-sm mb-5'>
+            <div className='card-body p-4 p-md-5'>
+              <p className='small fw-semibold text-secondary text-uppercase mb-2'>Carta de la casa</p>
+              <h1 className='display-5 text-primary mb-0'>Cafetería Origen</h1>
+            </div>
+          </header>
+
+          <section aria-labelledby='menu-page-title'>
+            <h2 id='menu-page-title' className='h3 text-primary border-bottom pb-3 mb-4'>
+              Productos
+            </h2>
+
+            {loading && (
+              <p className='alert alert-info' role='status'>
+                Cargando productos...
+              </p>
+            )}
+            {!loading && error && (
+              <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
+                <p role='alert' className='mb-0'>No se pudieron cargar los productos</p>
+                <button type='button' className='btn btn-primary' onClick={cargarProductos}>
+                  Reintentar
+                </button>
+              </div>
+            )}
+            {!loading && !error && productos.length === 0 && (
+              <p className='alert alert-light border'>No hay productos disponibles</p>
+            )}
+
+            <ul className='list-group list-group-flush'>
+              {productos.map((producto) => (
+                <li className='list-group-item px-0 py-3 bg-transparent' key={producto.id}>
+                  {producto.nombre}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }
