@@ -39,6 +39,9 @@ describe('MenuPage integración con API simulada', () => {
     render(<MenuPage />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando productos...');
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
   });
 
   it('muestra un mensaje de error cuando la API responde con un error', async () => {
