@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Producto } from '../types/producto';
 
 export default function MenuPage() {
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<Producto[] | null>(null);
 
   useEffect(() => {
     fetch('/productos')
@@ -13,9 +13,9 @@ export default function MenuPage() {
   return (
     <main className='container py-5'>
       <h1>Cafetería Origen</h1>
-      {productos.length === 0 && <p>No hay productos disponibles</p>}
+      {productos?.length === 0 && <p>No hay productos disponibles</p>}
       <ul>
-        {productos.map((producto) => (
+        {productos?.map((producto) => (
           <li key={producto.id}>{producto.nombre}</li>
         ))}
       </ul>

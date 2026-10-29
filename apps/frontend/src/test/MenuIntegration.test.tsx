@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
@@ -15,11 +15,15 @@ describe('MenuPage integración con API simulada', () => {
 
   it('muestra un mensaje cuando la API no devuelve productos', async () => {
     server.use(
-      http.get('*/productos', () => HttpResponse.json([])),
+      http.get('*/productos', async () => {
+        await delay(150);
+        return HttpResponse.json([]);
+      }),
     );
 
     render(<MenuPage />);
 
+    expect(screen.queryByText('No hay productos disponibles')).not.toBeInTheDocument();
     expect(await screen.findByText('No hay productos disponibles')).toBeInTheDocument();
   });
 });
