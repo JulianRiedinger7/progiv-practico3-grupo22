@@ -26,4 +26,17 @@ describe('MenuPage integración con API simulada', () => {
     expect(screen.queryByText('No hay productos disponibles')).not.toBeInTheDocument();
     expect(await screen.findByText('No hay productos disponibles')).toBeInTheDocument();
   });
+
+  it('muestra un estado de carga mientras espera la respuesta de la API', async () => {
+    server.use(
+      http.get('*/productos', async () => {
+        await delay(150);
+        return HttpResponse.json([]);
+      }),
+    );
+
+    render(<MenuPage />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('Cargando productos...');
+  });
 });
