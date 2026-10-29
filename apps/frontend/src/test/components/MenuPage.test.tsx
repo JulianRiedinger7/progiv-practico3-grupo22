@@ -16,4 +16,12 @@ describe('MenuPage', () => {
 
     expect(screen.getByText('Mesa 4')).toBeInTheDocument();
   });
+
+  it('indica que el pedido es para retirar en barra cuando no se recibe una mesa', () => {
+    window.history.replaceState({}, '', '/');
+
+    render(<MenuPage />);
+
+    expect(screen.getByText('Para retirar en barra')).toBeInTheDocument();
+  });
 });
