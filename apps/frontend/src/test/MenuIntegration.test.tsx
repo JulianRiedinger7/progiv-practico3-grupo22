@@ -46,6 +46,7 @@ describe('MenuPage integración con API simulada', () => {
     expect(screen.queryByText('Espresso pocillo brasil')).not.toBeInTheDocument();
     expect(screen.getByText(/3\.000/)).toBeInTheDocument();
     expect(screen.getByText(/4\.200/)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(2);
   });
 
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
@@ -59,6 +60,7 @@ describe('MenuPage integración con API simulada', () => {
     expect(
       await screen.findByRole('heading', { name: 'Espresso pocillo brasil' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Agregar al pedido' })).toBeInTheDocument();
   });
 
   it('muestra el precio final del café seleccionado', async () => {
