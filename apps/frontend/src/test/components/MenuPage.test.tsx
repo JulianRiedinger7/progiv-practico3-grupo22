@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import MenuPage from '../../components/MenuPage';
 
@@ -30,5 +31,16 @@ describe('MenuPage', () => {
 
     expect(await screen.findByRole('button', { name: 'Expreso' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Filtrado' })).toBeInTheDocument();
+  });
+
+  it('muestra los tamaños disponibles después de elegir un tipo de café', async () => {
+    const user = userEvent.setup();
+    render(<MenuPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+
+    expect(screen.getByRole('button', { name: 'Pocillo' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mediano' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Taza grande' })).toBeInTheDocument();
   });
 });
