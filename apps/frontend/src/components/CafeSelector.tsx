@@ -1,5 +1,12 @@
 import { useState } from 'react';
 import type { Producto } from '../schemas/producto';
+import { buscarCafe } from '../utils/buscarCafe';
+
+const formatoPrecio = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0,
+});
 
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
@@ -20,10 +27,22 @@ const variedadesCafe: { valor: Cafe['variedad']; etiqueta: string }[] = [
   { valor: 'etiopia', etiqueta: 'Etiopía' },
 ];
 
-export default function CafeSelector() {
+type CafeSelectorProps = {
+  productos: Producto[];
+};
+
+export default function CafeSelector({ productos }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
   const [variedadSeleccionada, setVariedadSeleccionada] = useState<Cafe['variedad'] | null>(null);
+  const cafeSeleccionado =
+    tipoSeleccionado && tamanoSeleccionado && variedadSeleccionada
+      ? buscarCafe(productos, {
+          tipo: tipoSeleccionado,
+          tamano: tamanoSeleccionado,
+          variedad: variedadSeleccionada,
+        })
+      : undefined;
 
   return (
     <div className='mb-4'>
@@ -85,6 +104,19 @@ export default function CafeSelector() {
             </div>
           )}
         </div>
+      )}
+
+      {cafeSeleccionado && (
+        <article className='card mt-4' aria-labelledby='cafe-seleccionado-title'>
+          <div className='card-body'>
+            <h4 id='cafe-seleccionado-title' className='card-title h5'>
+              {cafeSeleccionado.nombre}
+            </h4>
+            <p className='card-text fw-semibold text-primary mb-0'>
+              {formatoPrecio.format(cafeSeleccionado.precioFinal)}
+            </p>
+          </div>
+        </article>
       )}
     </div>
   );

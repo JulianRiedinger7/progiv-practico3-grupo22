@@ -5,12 +5,6 @@ import { listarProductos } from '../services/productosService';
 import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 
-const formatoPrecio = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-});
-
 export default function MenuPage() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -42,7 +36,7 @@ export default function MenuPage() {
               Productos
             </h2>
 
-            <CafeSelector />
+            <CafeSelector productos={productos} />
 
             {loading && (
               <p className='alert alert-info' role='status'>
@@ -61,19 +55,6 @@ export default function MenuPage() {
               <p className='alert alert-light border'>No hay productos disponibles</p>
             )}
 
-            <ul className='list-group list-group-flush'>
-              {productos.map((producto) => (
-                <li
-                  className='list-group-item d-flex justify-content-between align-items-center gap-3 px-0 py-3 bg-transparent'
-                  key={producto.id}
-                >
-                  <span>{producto.nombre}</span>
-                  <span className='fw-semibold text-primary text-nowrap'>
-                    {formatoPrecio.format(producto.precioFinal)}
-                  </span>
-                </li>
-              ))}
-            </ul>
           </section>
         </div>
       </div>

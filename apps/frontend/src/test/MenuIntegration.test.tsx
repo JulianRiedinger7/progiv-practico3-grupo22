@@ -6,18 +6,26 @@ import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
 describe('MenuPage integración con API simulada', () => {
-  it('muestra un producto devuelto por la API', async () => {
+  it('muestra un producto devuelto por la API después de completar su selección', async () => {
+    const user = userEvent.setup();
     render(<MenuPage />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Espresso pocillo brasil')).toBeInTheDocument();
-    });
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+    await user.click(screen.getByRole('button', { name: 'Pocillo' }));
+    await user.click(screen.getByRole('button', { name: 'Brasil' }));
+
+    expect(await screen.findByRole('heading', { name: 'Espresso pocillo brasil' })).toBeInTheDocument();
   });
 
-  it('muestra el precio final devuelto por la API', async () => {
+  it('muestra el precio final del café seleccionado', async () => {
+    const user = userEvent.setup();
     render(<MenuPage />);
 
-    expect(await screen.findByText(/\$\s*5\.020/)).toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+    await user.click(screen.getByRole('button', { name: 'Pocillo' }));
+    await user.click(screen.getByRole('button', { name: 'Brasil' }));
+
+    expect(await screen.findByText(/5\.020/)).toBeInTheDocument();
   });
 
   it('muestra un mensaje cuando la API no devuelve productos', async () => {
@@ -97,7 +105,12 @@ describe('MenuPage integración con API simulada', () => {
 
     await user.click(screen.getByRole('button', { name: 'Reintentar' }));
 
-    expect(await screen.findByText('Espresso pocillo brasil')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+    await user.click(screen.getByRole('button', { name: 'Pocillo' }));
+    await user.click(screen.getByRole('button', { name: 'Brasil' }));
+
+    expect(await screen.findByRole('heading', { name: 'Espresso pocillo brasil' })).toBeInTheDocument();
   });
 });
