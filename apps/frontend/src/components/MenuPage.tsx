@@ -15,6 +15,7 @@ export default function MenuPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [tipoCafeSeleccionado, setTipoCafeSeleccionado] = useState<'espresso' | 'filtrado' | null>(null);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -44,13 +45,23 @@ export default function MenuPage() {
             <div className='mb-4'>
               <h3 className='h5 mb-3'>Elegí la bebida</h3>
               <div className='btn-group' role='group' aria-label='Tipo de café'>
-                <button type='button' className='btn btn-outline-primary'>
+                <button type='button' className='btn btn-outline-primary' onClick={() => setTipoCafeSeleccionado('espresso')}>
                   Expreso
                 </button>
-                <button type='button' className='btn btn-outline-primary'>
+                <button type='button' className='btn btn-outline-primary' onClick={() => setTipoCafeSeleccionado('filtrado')}>
                   Filtrado
                 </button>
               </div>
+              {tipoCafeSeleccionado && (
+                <div className='mt-3'>
+                  <h4 className='h6 mb-2'>Elegí el tamaño</h4>
+                  <div className='btn-group' role='group' aria-label='Tamaño del café'>
+                    <button type='button' className='btn btn-outline-primary'>Pocillo</button>
+                    <button type='button' className='btn btn-outline-primary'>Mediano</button>
+                    <button type='button' className='btn btn-outline-primary'>Taza grande</button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {loading && (
