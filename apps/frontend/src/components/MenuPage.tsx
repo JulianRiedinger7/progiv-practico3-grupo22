@@ -76,6 +76,9 @@ export default function MenuPage() {
                           <p className='card-text h5 fw-bold text-primary mb-0'>
                             {formatoPrecio.format(producto.precioFinal)}
                           </p>
+                          <button type='button' className='btn btn-primary'>
+                            Agregar al pedido
+                          </button>
                         </div>
                       </article>
                     </div>

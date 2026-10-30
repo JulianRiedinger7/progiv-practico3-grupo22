@@ -132,6 +132,9 @@ export default function CafeSelector({ productos }: CafeSelectorProps) {
               <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
                 {cafeSeleccionado.nombre}
               </h4>
+              <button type='button' className='btn btn-primary'>
+                Agregar al pedido
+              </button>
             </div>
             <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
               {formatoPrecio.format(cafeSeleccionado.precioFinal)}
