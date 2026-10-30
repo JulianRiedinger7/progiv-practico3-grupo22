@@ -61,13 +61,17 @@ export default function MenuPage() {
                 <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
                   Pastelería
                 </h3>
-                <ul className='list-group list-group-flush'>
+                <div className='row row-cols-1 row-cols-sm-2 g-3'>
                   {productosPasteleria.map((producto) => (
-                    <li className='list-group-item px-0 py-3 bg-transparent' key={producto.id}>
-                      {producto.nombre}
-                    </li>
+                    <div className='col' key={producto.id}>
+                      <article className='card h-100 border-0 shadow-sm'>
+                        <div className='card-body d-flex align-items-center'>
+                          <h4 className='card-title h5 mb-0'>{producto.nombre}</h4>
+                        </div>
+                      </article>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
             )}
 
