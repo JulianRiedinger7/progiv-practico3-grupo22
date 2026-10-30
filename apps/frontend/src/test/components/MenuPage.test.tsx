@@ -24,4 +24,11 @@ describe('MenuPage', () => {
 
     expect(screen.getByText('Para retirar en barra')).toBeInTheDocument();
   });
+
+  it('muestra expreso y filtrado como opciones de bebida', async () => {
+    render(<MenuPage />);
+
+    expect(await screen.findByRole('button', { name: 'Expreso' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filtrado' })).toBeInTheDocument();
+  });
 });
