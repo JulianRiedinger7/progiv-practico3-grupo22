@@ -41,6 +41,18 @@ export default function MenuPage() {
               Productos
             </h2>
 
+            <div className='mb-4'>
+              <h3 className='h5 mb-3'>Elegí la bebida</h3>
+              <div className='btn-group' role='group' aria-label='Tipo de café'>
+                <button type='button' className='btn btn-outline-primary'>
+                  Expreso
+                </button>
+                <button type='button' className='btn btn-outline-primary'>
+                  Filtrado
+                </button>
+              </div>
+            </div>
+
             {loading && (
               <p className='alert alert-info' role='status'>
                 Cargando productos...
