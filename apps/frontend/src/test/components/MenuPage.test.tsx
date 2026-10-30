@@ -43,4 +43,16 @@ describe('MenuPage', () => {
     expect(screen.getByRole('button', { name: 'Mediano' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Taza grande' })).toBeInTheDocument();
   });
+
+  it('muestra las variedades disponibles después de elegir un tipo y un tamaño', async () => {
+    const user = userEvent.setup();
+    render(<MenuPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+    await user.click(screen.getByRole('button', { name: 'Pocillo' }));
+
+    expect(screen.getByRole('button', { name: 'Brasil' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Colombia' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Etiopía' })).toBeInTheDocument();
+  });
 });
