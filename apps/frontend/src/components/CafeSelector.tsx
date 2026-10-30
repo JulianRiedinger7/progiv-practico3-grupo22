@@ -43,37 +43,49 @@ export default function CafeSelector({ productos }: CafeSelectorProps) {
           variedad: variedadSeleccionada,
         })
       : undefined;
-
   return (
     <div className='mb-4'>
-      <h3 className='h5 mb-3'>Elegí la bebida</h3>
-      <div className='btn-group' role='group' aria-label='Tipo de café'>
-        {tiposCafe.map(({ valor, etiqueta }) => (
-          <button
-            key={valor}
-            type='button'
-            className={`btn btn-outline-primary ${tipoSeleccionado === valor ? 'active' : ''}`}
-            aria-pressed={tipoSeleccionado === valor}
-            onClick={() => {
-              setTipoSeleccionado(valor);
-              setTamanoSeleccionado(null);
-              setVariedadSeleccionada(null);
-            }}
-          >
-            {etiqueta}
-          </button>
-        ))}
-      </div>
+      <h3 className='h5 mb-2'>Elegí tu café en 3 pasos</h3>
+      <p className='text-secondary mb-4'>
+        Primero, elegí el tipo; después, el tamaño y la variedad.
+      </p>
+
+      <section className='mb-4' aria-labelledby='paso-tipo-cafe'>
+        <h4 id='paso-tipo-cafe' className='h6 d-flex align-items-center gap-2 mb-3'>
+          <span className='badge rounded-pill text-bg-primary'>1</span>
+          ¿Qué tipo de café querés?
+        </h4>
+        <div className='d-flex flex-wrap gap-2' role='group' aria-label='Tipo de café'>
+          {tiposCafe.map(({ valor, etiqueta }) => (
+            <button
+              key={valor}
+              type='button'
+              className={`btn btn-outline-primary rounded-pill px-4 ${tipoSeleccionado === valor ? 'active' : ''}`}
+              aria-pressed={tipoSeleccionado === valor}
+              onClick={() => {
+                setTipoSeleccionado(valor);
+                setTamanoSeleccionado(null);
+                setVariedadSeleccionada(null);
+              }}
+            >
+              {etiqueta}
+            </button>
+          ))}
+        </div>
+      </section>
 
       {tipoSeleccionado && (
-        <div className='mt-3'>
-          <h4 className='h6 mb-2'>Elegí el tamaño</h4>
-          <div className='btn-group' role='group' aria-label='Tamaño del café'>
+        <section className='mb-4' aria-labelledby='paso-tamano-cafe'>
+          <h4 id='paso-tamano-cafe' className='h6 d-flex align-items-center gap-2 mb-3'>
+            <span className='badge rounded-pill text-bg-primary'>2</span>
+            Elegí el tamaño
+          </h4>
+          <div className='d-flex flex-wrap gap-2' role='group' aria-label='Tamaño del café'>
             {tamanosCafe.map(({ valor, etiqueta }) => (
               <button
                 key={valor}
                 type='button'
-                className={`btn btn-outline-primary ${tamanoSeleccionado === valor ? 'active' : ''}`}
+                className={`btn btn-outline-primary rounded-pill px-4 ${tamanoSeleccionado === valor ? 'active' : ''}`}
                 aria-pressed={tamanoSeleccionado === valor}
                 onClick={() => {
                   setTamanoSeleccionado(valor);
@@ -86,14 +98,17 @@ export default function CafeSelector({ productos }: CafeSelectorProps) {
           </div>
 
           {tamanoSeleccionado && (
-            <div className='mt-3'>
-              <h5 className='h6 mb-2'>Elegí la variedad</h5>
-              <div className='btn-group' role='group' aria-label='Variedad del café'>
+            <section className='mt-4' aria-labelledby='paso-variedad-cafe'>
+              <h4 id='paso-variedad-cafe' className='h6 d-flex align-items-center gap-2 mb-3'>
+                <span className='badge rounded-pill text-bg-primary'>3</span>
+                Elegí la variedad
+              </h4>
+              <div className='d-flex flex-wrap gap-2' role='group' aria-label='Variedad del café'>
                 {variedadesCafe.map(({ valor, etiqueta }) => (
                   <button
                     key={valor}
                     type='button'
-                    className={`btn btn-outline-primary ${variedadSeleccionada === valor ? 'active' : ''}`}
+                    className={`btn btn-outline-primary rounded-pill px-4 ${variedadSeleccionada === valor ? 'active' : ''}`}
                     aria-pressed={variedadSeleccionada === valor}
                     onClick={() => setVariedadSeleccionada(valor)}
                   >
@@ -101,18 +116,24 @@ export default function CafeSelector({ productos }: CafeSelectorProps) {
                   </button>
                 ))}
               </div>
-            </div>
+            </section>
           )}
-        </div>
+        </section>
       )}
 
       {cafeSeleccionado && (
-        <article className='card mt-4' aria-labelledby='cafe-seleccionado-title'>
-          <div className='card-body'>
-            <h4 id='cafe-seleccionado-title' className='card-title h5'>
-              {cafeSeleccionado.nombre}
-            </h4>
-            <p className='card-text fw-semibold text-primary mb-0'>
+        <article
+          className='card border-primary shadow-sm mt-4'
+          aria-labelledby='cafe-seleccionado-title'
+        >
+          <div className='card-body d-flex flex-column flex-sm-row justify-content-between gap-3'>
+            <div>
+              <p className='small fw-semibold text-secondary text-uppercase mb-1'>Tu selección</p>
+              <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
+                {cafeSeleccionado.nombre}
+              </h4>
+            </div>
+            <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
               {formatoPrecio.format(cafeSeleccionado.precioFinal)}
             </p>
           </div>
