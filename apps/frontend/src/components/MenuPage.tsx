@@ -5,6 +5,12 @@ import { listarProductos } from '../services/productosService';
 import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 
+const formatoPrecio = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0,
+});
+
 export default function MenuPage() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -66,7 +72,12 @@ export default function MenuPage() {
                     <div className='col' key={producto.id}>
                       <article className='card h-100 border-0 shadow-sm'>
                         <div className='card-body d-flex align-items-center'>
-                          <h4 className='card-title h5 mb-0'>{producto.nombre}</h4>
+                          <div>
+                            <h4 className='card-title h5 mb-2'>{producto.nombre}</h4>
+                            <p className='card-text fw-semibold text-primary mb-0'>
+                              {formatoPrecio.format(producto.precioFinal)}
+                            </p>
+                          </div>
                         </div>
                       </article>
                     </div>
