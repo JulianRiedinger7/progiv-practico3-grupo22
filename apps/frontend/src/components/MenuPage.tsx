@@ -16,6 +16,7 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [tipoCafeSeleccionado, setTipoCafeSeleccionado] = useState<'espresso' | 'filtrado' | null>(null);
+  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<'pocillo' | 'mediano' | 'taza_grande' | null>(null);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -66,10 +67,20 @@ export default function MenuPage() {
                 <div className='mt-3'>
                   <h4 className='h6 mb-2'>Elegí el tamaño</h4>
                   <div className='btn-group' role='group' aria-label='Tamaño del café'>
-                    <button type='button' className='btn btn-outline-primary'>Pocillo</button>
-                    <button type='button' className='btn btn-outline-primary'>Mediano</button>
-                    <button type='button' className='btn btn-outline-primary'>Taza grande</button>
+                    <button type='button' className='btn btn-outline-primary' onClick={() => setTamanoSeleccionado('pocillo')}>Pocillo</button>
+                    <button type='button' className='btn btn-outline-primary' onClick={() => setTamanoSeleccionado('mediano')}>Mediano</button>
+                    <button type='button' className='btn btn-outline-primary' onClick={() => setTamanoSeleccionado('taza_grande')}>Taza grande</button>
                   </div>
+                  {tamanoSeleccionado && (
+                    <div className='mt-3'>
+                      <h5 className='h6 mb-2'>Elegí la variedad</h5>
+                      <div className='btn-group' role='group' aria-label='Variedad del café'>
+                        <button type='button' className='btn btn-outline-primary'>Brasil</button>
+                        <button type='button' className='btn btn-outline-primary'>Colombia</button>
+                        <button type='button' className='btn btn-outline-primary'>Etiopía</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
