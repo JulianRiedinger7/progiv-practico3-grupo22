@@ -10,6 +10,7 @@ export default function MenuPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -53,6 +54,21 @@ export default function MenuPage() {
             )}
             {!loading && !error && productos.length === 0 && (
               <p className='alert alert-light border'>No hay productos disponibles</p>
+            )}
+
+            {!loading && !error && productosPasteleria.length > 0 && (
+              <section className='mt-5' aria-labelledby='pasteleria-title'>
+                <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
+                  Pastelería
+                </h3>
+                <ul className='list-group list-group-flush'>
+                  {productosPasteleria.map((producto) => (
+                    <li className='list-group-item px-0 py-3 bg-transparent' key={producto.id}>
+                      {producto.nombre}
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
 
           </section>

@@ -35,7 +35,7 @@ describe('MenuPage integración con API simulada', () => {
     render(<MenuPage />);
 
     expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
-    expect(await screen.findByText('Espresso Pocillo brasil')).not.toBeInTheDocument();
+    expect(screen.queryByText('Espresso pocillo brasil')).not.toBeInTheDocument();
   });
 
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
