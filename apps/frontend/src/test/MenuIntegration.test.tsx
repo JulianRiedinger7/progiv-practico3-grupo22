@@ -6,6 +6,38 @@ import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
 describe('MenuPage integración con API simulada', () => {
+  it('muestra la pastelería al abrir el menú sin seleccionar opciones', async () => {
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 1,
+            nombre: 'Espresso pocillo brasil',
+            tipo: 'espresso',
+            precioBase: 2500,
+            precioFinal: 5020,
+            tamano: 'pocillo',
+            variedad: 'brasil',
+            gramos: 18,
+          },
+          {
+            id: 2,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            precioBase: 3000,
+            precioFinal: 3000,
+            variedad: 'muffin_chocolate',
+          },
+        ]),
+      ),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
+    expect(await screen.findByText('Espresso Pocillo brasil')).not.toBeInTheDocument();
+  });
+
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
     const user = userEvent.setup();
     render(<MenuPage />);
@@ -14,7 +46,9 @@ describe('MenuPage integración con API simulada', () => {
     await user.click(screen.getByRole('button', { name: 'Pocillo' }));
     await user.click(screen.getByRole('button', { name: 'Brasil' }));
 
-    expect(await screen.findByRole('heading', { name: 'Espresso pocillo brasil' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Espresso pocillo brasil' }),
+    ).toBeInTheDocument();
   });
 
   it('muestra el precio final del café seleccionado', async () => {
@@ -59,9 +93,7 @@ describe('MenuPage integración con API simulada', () => {
   });
 
   it('muestra un mensaje de error cuando la API responde con un error', async () => {
-    server.use(
-      http.get('*/api/productos', () => HttpResponse.json([], { status: 500 })),
-    );
+    server.use(http.get('*/api/productos', () => HttpResponse.json([], { status: 500 })));
 
     render(<MenuPage />);
 
@@ -111,6 +143,8 @@ describe('MenuPage integración con API simulada', () => {
     await user.click(screen.getByRole('button', { name: 'Pocillo' }));
     await user.click(screen.getByRole('button', { name: 'Brasil' }));
 
-    expect(await screen.findByRole('heading', { name: 'Espresso pocillo brasil' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Espresso pocillo brasil' }),
+    ).toBeInTheDocument();
   });
 });
