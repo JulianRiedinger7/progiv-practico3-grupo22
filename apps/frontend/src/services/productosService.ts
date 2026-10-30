@@ -1,11 +1,4 @@
-import { z } from 'zod';
-
-const productoSchema = z.object({
-  id: z.number(),
-  nombre: z.string(),
-});
-
-const productosSchema = z.array(productoSchema);
+import { productosSchema } from '../schemas/producto';
 
 export async function listarProductos() {
   const response = await fetch('/api/productos');

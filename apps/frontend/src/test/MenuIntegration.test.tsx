@@ -75,7 +75,7 @@ describe('MenuPage integración con API simulada', () => {
         }
 
         return HttpResponse.json([
-          { id: 1, nombre: 'Espresso pocillo brasil' },
+          { id: 1, nombre: 'Espresso pocillo brasil', precioFinal: 5020 },
         ]);
       }),
     );

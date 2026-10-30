@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import MenuHeader from './MenuHeader';
 import { listarProductos } from '../services/productosService';
-import type { Producto } from '../types/producto';
+import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
+
+const formatoPrecio = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0,
+});
 
 export default function MenuPage() {
   const mesa = leerMesaDesdeUrl(window.location.search);
@@ -54,8 +60,14 @@ export default function MenuPage() {
 
             <ul className='list-group list-group-flush'>
               {productos.map((producto) => (
-                <li className='list-group-item px-0 py-3 bg-transparent' key={producto.id}>
-                  {producto.nombre}
+                <li
+                  className='list-group-item d-flex justify-content-between align-items-center gap-3 px-0 py-3 bg-transparent'
+                  key={producto.id}
+                >
+                  <span>{producto.nombre}</span>
+                  <span className='fw-semibold text-primary text-nowrap'>
+                    {formatoPrecio.format(producto.precioFinal)}
+                  </span>
                 </li>
               ))}
             </ul>
