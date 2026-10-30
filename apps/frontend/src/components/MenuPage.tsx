@@ -70,14 +70,12 @@ export default function MenuPage() {
                 <div className='row row-cols-1 row-cols-sm-2 g-3'>
                   {productosPasteleria.map((producto) => (
                     <div className='col' key={producto.id}>
-                      <article className='card h-100 border-0 shadow-sm'>
-                        <div className='card-body d-flex align-items-center'>
-                          <div>
-                            <h4 className='card-title h5 mb-2'>{producto.nombre}</h4>
-                            <p className='card-text fw-semibold text-primary mb-0'>
-                              {formatoPrecio.format(producto.precioFinal)}
-                            </p>
-                          </div>
+                      <article className='card h-100 border-0 bg-light shadow-sm'>
+                        <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
+                          <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
+                          <p className='card-text h5 fw-bold text-primary mb-0'>
+                            {formatoPrecio.format(producto.precioFinal)}
+                          </p>
                         </div>
                       </article>
                     </div>
