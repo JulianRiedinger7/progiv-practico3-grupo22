@@ -55,4 +55,18 @@ describe('MenuPage', () => {
     expect(screen.getByRole('button', { name: 'Colombia' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Etiopía' })).toBeInTheDocument();
   });
+
+  it('muestra una tarjeta con el café elegido después de seleccionar tipo, tamaño y variedad', async () => {
+    const user = userEvent.setup();
+    render(<MenuPage />);
+
+    expect(screen.queryByRole('heading', { name: 'Espresso pocillo brasil' })).not.toBeInTheDocument();
+
+    await user.click(await screen.findByRole('button', { name: 'Expreso' }));
+    await user.click(screen.getByRole('button', { name: 'Pocillo' }));
+    await user.click(screen.getByRole('button', { name: 'Brasil' }));
+
+    expect(screen.getByRole('heading', { name: 'Espresso pocillo brasil' })).toBeInTheDocument();
+    expect(screen.getByText(/5\.020/)).toBeInTheDocument();
+  });
 });
