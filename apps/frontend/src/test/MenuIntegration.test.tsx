@@ -16,7 +16,7 @@ describe('MenuPage integración con API simulada', () => {
 
   it('muestra un mensaje cuando la API no devuelve productos', async () => {
     server.use(
-      http.get('*/productos', async () => {
+      http.get('*/api/productos', async () => {
         await delay(150);
         return HttpResponse.json([]);
       }),
@@ -30,7 +30,7 @@ describe('MenuPage integración con API simulada', () => {
 
   it('muestra un estado de carga mientras espera la respuesta de la API', async () => {
     server.use(
-      http.get('*/productos', async () => {
+      http.get('*/api/productos', async () => {
         await delay(150);
         return HttpResponse.json([]);
       }),
@@ -46,7 +46,7 @@ describe('MenuPage integración con API simulada', () => {
 
   it('muestra un mensaje de error cuando la API responde con un error', async () => {
     server.use(
-      http.get('*/productos', () => HttpResponse.json([], { status: 500 })),
+      http.get('*/api/productos', () => HttpResponse.json([], { status: 500 })),
     );
 
     render(<MenuPage />);
@@ -61,7 +61,7 @@ describe('MenuPage integración con API simulada', () => {
     let cantidadDePeticiones = 0;
 
     server.use(
-      http.get('*/productos', () => {
+      http.get('*/api/productos', () => {
         cantidadDePeticiones += 1;
 
         if (cantidadDePeticiones === 1) {

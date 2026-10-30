@@ -8,7 +8,7 @@ const productoSchema = z.object({
 const productosSchema = z.array(productoSchema);
 
 export async function listarProductos() {
-  const response = await fetch('/productos');
+  const response = await fetch('/api/productos');
 
   if (!response.ok) {
     throw new Error(`La API respondió con estado ${response.status}`);
