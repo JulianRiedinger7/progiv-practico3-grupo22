@@ -14,6 +14,12 @@ describe('MenuPage integración con API simulada', () => {
     });
   });
 
+  it('muestra el precio final devuelto por la API', async () => {
+    render(<MenuPage />);
+
+    expect(await screen.findByText(/\$\s*5\.020/)).toBeInTheDocument();
+  });
+
   it('muestra un mensaje cuando la API no devuelve productos', async () => {
     server.use(
       http.get('*/api/productos', async () => {
