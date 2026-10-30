@@ -28,6 +28,14 @@ describe('MenuPage integración con API simulada', () => {
             precioFinal: 3000,
             variedad: 'muffin_chocolate',
           },
+          {
+            id: 3,
+            nombre: 'Pasteleria torta selva_negra',
+            tipo: 'pasteleria',
+            precioBase: 4200,
+            precioFinal: 4200,
+            variedad: 'torta_selva_negra',
+          },
         ]),
       ),
     );
@@ -36,6 +44,8 @@ describe('MenuPage integración con API simulada', () => {
 
     expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
     expect(screen.queryByText('Espresso pocillo brasil')).not.toBeInTheDocument();
+    expect(screen.getByText(/3\.000/)).toBeInTheDocument();
+    expect(screen.getByText(/4\.200/)).toBeInTheDocument();
   });
 
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
