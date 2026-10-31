@@ -60,7 +60,8 @@ describe("Cart", () => {
   it("resta una unidad", async () => {
     const { user } = renderCart(items);
     await user.click(screen.getByRole("button", { name: "Restar Expreso Mediano Colombia" }));
-    expect(screen.getByText("Cantidad: 1", { selector: "span" , exact: true })).toBeInTheDocument();
+    const [expreso] = screen.getAllByRole("listitem");
+    expect(within(expreso).getByText("Cantidad: 1")).toBeInTheDocument();
     expect(screen.getByText("Subtotal del pedido: $9.860")).toBeInTheDocument();
   });
 
