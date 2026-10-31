@@ -37,7 +37,7 @@ describe("Cart", () => {
   it("muestra cada producto con su cantidad y subtotal", () => {
     renderCart(items);
     const [expreso, muffin] = screen.getAllByRole("listitem");
-    expect(within(expreso).getByText("Expreso Mediano")).toBeInTheDocument();
+    expect(within(expreso).getByText("Expreso Mediano Colombia")).toBeInTheDocument();
     expect(within(expreso).getByText("Cantidad: 2")).toBeInTheDocument();
     expect(within(expreso).getByText("Subtotal: $14.720")).toBeInTheDocument();
     expect(within(muffin).getByText("Muffin de chocolate")).toBeInTheDocument();
@@ -52,14 +52,14 @@ describe("Cart", () => {
 
   it("suma una unidad", async () => {
     const { user } = renderCart(items);
-    await user.click(screen.getByRole("button", { name: "Sumar Expreso Mediano" }));
+    await user.click(screen.getByRole("button", { name: "Sumar Expreso Mediano Colombia" }));
     expect(screen.getByText("Cantidad: 3")).toBeInTheDocument();
     expect(screen.getByText("Subtotal del pedido: $24.580")).toBeInTheDocument();
   });
 
   it("resta una unidad", async () => {
     const { user } = renderCart(items);
-    await user.click(screen.getByRole("button", { name: "Restar Expreso Mediano" }));
+    await user.click(screen.getByRole("button", { name: "Restar Expreso Mediano Colombia" }));
     expect(screen.getByText("Cantidad: 1", { selector: "span" , exact: true })).toBeInTheDocument();
     expect(screen.getByText("Subtotal del pedido: $9.860")).toBeInTheDocument();
   });
@@ -72,8 +72,8 @@ describe("Cart", () => {
 
   it("quita un producto", async () => {
     const { user } = renderCart(items);
-    await user.click(screen.getByRole("button", { name: "Quitar Expreso Mediano" }));
-    expect(screen.queryByText("Expreso Mediano")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Quitar Expreso Mediano Colombia" }));
+    expect(screen.queryByText("Expreso Mediano Colombia")).not.toBeInTheDocument();
     expect(screen.getByText("Subtotal del pedido: $2.500")).toBeInTheDocument();
   });
 

@@ -1,13 +1,13 @@
 import { createContext, createElement, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from "react";
 import { carritoReducer, carritoSubtotal, type CarritoAction, type CarritoItem } from "./CarritoReducer";
 
-type CartContextValue = {
+type CarritoContextValue = {
   items: CarritoItem[];
   subtotal: number;
   dispatch: Dispatch<CarritoAction>;
 };
 
-const CartContext = createContext<CartContextValue | null>(null);
+const CarritoContext = createContext<CarritoContextValue | null>(null);
 
 export function CarritoProvider({
   children,
@@ -21,11 +21,11 @@ export function CarritoProvider({
     () => ({ items: state.items, subtotal: carritoSubtotal(state.items), dispatch }),
     [state.items],
   );
-  return createElement(CartContext.Provider, { value }, children);
+  return createElement(CarritoContext.Provider, { value }, children);
 }
 
-export function useCart(): CartContextValue {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart debe usarse dentro de <CartProvider>");
+export function useCarrito(): CarritoContextValue {
+  const ctx = useContext(CarritoContext);
+  if (!ctx) throw new Error("useCarrito debe usarse dentro de <CarritoProvider>");
   return ctx;
 }
