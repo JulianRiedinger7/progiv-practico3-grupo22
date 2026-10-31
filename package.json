@@ -16,5 +16,8 @@
     "test:e2e:web": "pnpm --filter @cafeteria/frontend test:e2e",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down"
+  },
+  "dependencies": {
+    "msw": "^3.0.3"
   }
 }

@@ -29,9 +29,10 @@ const variedadesCafe: { valor: Cafe['variedad']; etiqueta: string }[] = [
 
 type CafeSelectorProps = {
   productos: Producto[];
+  onAgregar: (producto: Producto) => void;
 };
 
-export default function CafeSelector({ productos }: CafeSelectorProps) {
+export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
   const [variedadSeleccionada, setVariedadSeleccionada] = useState<Cafe['variedad'] | null>(null);
@@ -132,7 +133,11 @@ export default function CafeSelector({ productos }: CafeSelectorProps) {
               <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
                 {cafeSeleccionado.nombre}
               </h4>
-              <button type='button' className='btn btn-primary'>
+              <button
+                type='button'
+                className='btn btn-primary'
+                onClick={() => onAgregar(cafeSeleccionado)}
+              >
                 Agregar al pedido
               </button>
             </div>

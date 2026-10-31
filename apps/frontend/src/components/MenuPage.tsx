@@ -4,6 +4,8 @@ import CafeSelector from './CafeSelector';
 import { listarProductos } from '../services/productosService';
 import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
+import { Carrito } from '../carrito/carrito';
+import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -11,12 +13,34 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
   maximumFractionDigits: 0,
 });
 
-export default function MenuPage() {
+function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [confirmado, setConfirmado] = useState(false);
+  const { dispatch } = useCarrito();
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
+
+  const agregarAlPedido = useCallback(
+    (producto: Producto) => {
+      setConfirmado(false);
+      dispatch({
+        type: 'add',
+        item: {
+          productoId: producto.id,
+          nombre: producto.nombre,
+          precio: producto.precioFinal,
+        },
+      });
+    },
+    [dispatch],
+  );
+
+  const confirmarPedido = useCallback(() => {
+    dispatch({ type: 'clear' });
+    setConfirmado(true);
+  }, [dispatch]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -43,7 +67,7 @@ export default function MenuPage() {
               Productos
             </h2>
 
-            <CafeSelector productos={productos} />
+            <CafeSelector productos={productos} onAgregar={agregarAlPedido} />
 
             {loading && (
               <p className='alert alert-info' role='status'>
@@ -76,7 +100,11 @@ export default function MenuPage() {
                           <p className='card-text h5 fw-bold text-primary mb-0'>
                             {formatoPrecio.format(producto.precioFinal)}
                           </p>
-                          <button type='button' className='btn btn-primary'>
+                          <button
+                            type='button'
+                            className='btn btn-primary'
+                            onClick={() => agregarAlPedido(producto)}
+                          >
                             Agregar al pedido
                           </button>
                         </div>
@@ -87,9 +115,25 @@ export default function MenuPage() {
               </section>
             )}
 
+            <div className='mt-4'>
+              <Carrito onConfirm={confirmarPedido} />
+              {confirmado && (
+                <p className='alert alert-success mt-3 mb-0' role='status'>
+                  ¡Pedido confirmado!
+                </p>
+              )}
+            </div>
           </section>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function MenuPage() {
+  return (
+    <CarritoProvider>
+      <MenuPageContent />
+    </CarritoProvider>
   );
 }
