@@ -2,9 +2,8 @@ services:
   backend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: apps/backend/Dockerfile
     working_dir: /workspace
-    command: pnpm --filter @cafeteria/backend dev
     environment:
       SQLITE_DATABASE_PATH: /workspace/apps/backend/data/cafeteria.sqlite
       PORT: 3000
@@ -16,15 +15,17 @@ services:
       - backend_node_modules_sqlite:/workspace/apps/backend/node_modules
       - frontend_node_modules_sqlite:/workspace/apps/frontend/node_modules
       - sqlite_data:/workspace/apps/backend/data
+    command: pnpm --filter @cafeteria/backend dev
+    restart: unless-stopped
 
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: apps/frontend/Dockerfile
     working_dir: /workspace
     command: pnpm --filter @cafeteria/frontend dev -- --host 0.0.0.0
     environment:
-      VITE_API_URL: http://localhost:3000
+      VITE_API_URL: http://backend:3000
     ports:
       - "5173:5173"
     volumes:
@@ -34,22 +35,7 @@ services:
       - frontend_node_modules_sqlite:/workspace/apps/frontend/node_modules
     depends_on:
       - backend
-
-  test-runner:
-    profiles: [test]
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.test
-    working_dir: /workspace
-    environment:
-      SQLITE_DATABASE_PATH: ":memory:"
-      PORT: 3000
-      CI: "1"
-    volumes:
-      - .:/workspace
-      - root_node_modules_sqlite:/workspace/node_modules
-      - backend_node_modules_sqlite:/workspace/apps/backend/node_modules
-      - frontend_node_modules_sqlite:/workspace/apps/frontend/node_modules
+    restart: unless-stopped
 
 volumes:
   root_node_modules_sqlite:
