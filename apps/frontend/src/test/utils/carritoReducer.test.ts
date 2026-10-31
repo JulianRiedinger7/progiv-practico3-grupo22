@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { carritoReducer, type CarritoItem, type CarritoState } from "../../carrito/CarritoReducer";
 
-const expreso: Omit<CarritoItem, "cantidad"> = { productoId: 5, nombre: "Expreso Mediano", precio: 7360 };
+const expreso: Omit<CarritoItem, "cantidad"> = { productoId: 4, nombre: "Expreso Mediano Brasil", precio: 6280 };
 const muffin: Omit<CarritoItem, "cantidad"> = { productoId: 19, nombre: "Muffin de chocolate", precio: 2500 };
 
 const empty: CarritoState = { items: [] };
@@ -27,21 +27,21 @@ describe("carritoReducer", () => {
 
   it("decrement resta 1", () => {
     let state = carritoReducer(empty, { type: "add", item: expreso });
-    state = carritoReducer(state, { type: "increment", productoId: 5 });
-    state = carritoReducer(state, { type: "decrement", productoId: 5 });
+    state = carritoReducer(state, { type: "increment", productoId: 4 });
+    state = carritoReducer(state, { type: "decrement", productoId: 4 });
     expect(state.items[0].cantidad).toBe(1);
   });
 
   it("decrement con cantidad 1 quita el producto", () => {
     let state = carritoReducer(empty, { type: "add", item: expreso });
-    state = carritoReducer(state, { type: "decrement", productoId: 5 });
+    state = carritoReducer(state, { type: "decrement", productoId: 4 });
     expect(state.items).toEqual([]);
   });
 
   it("remove quita el producto sin importar la cantidad", () => {
     let state = carritoReducer(empty, { type: "add", item: expreso });
-    state = carritoReducer(state, { type: "increment", productoId: 5 });
-    state = carritoReducer(state, { type: "remove", productoId: 5 });
+    state = carritoReducer(state, { type: "increment", productoId: 4 });
+    state = carritoReducer(state, { type: "remove", productoId: 4 });
     expect(state.items).toEqual([]);
   });
 
@@ -59,7 +59,7 @@ describe("carritoReducer", () => {
   it("no muta el estado anterior", () => {
     const before = carritoReducer(empty, { type: "add", item: expreso });
     const snapshot = structuredClone(before);
-    carritoReducer(before, { type: "increment", productoId: 5 });
+    carritoReducer(before, { type: "increment", productoId: 4 });
     expect(before).toEqual(snapshot);
   });
 });

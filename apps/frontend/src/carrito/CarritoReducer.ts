@@ -1,7 +1,7 @@
 export type CarritoItem = {
   productoId: number;
   nombre: string;
-  precio: number; // precio unitario que vino de la API (solo orientativo)
+  precio: number;
   cantidad: number;
 };
 
@@ -14,8 +14,39 @@ export type CarritoAction =
   | { type: "remove"; productoId: number }
   | { type: "clear" };
 
-export const initialCartState: CarritoState = { items: [] };
+export const initialCarritoState: CarritoState = { items: [] };
 
 export function carritoReducer(state: CarritoState, action: CarritoAction): CarritoState {
- 
+  switch (action.type) {
+    case "add": {
+      const exists = state.items.some((i) => i.productoId === action.item.productoId);
+      return {
+        items: exists
+          ? state.items.map((i) =>
+              i.productoId === action.item.productoId ? { ...i, cantidad: i.cantidad + 1 } : i,
+            )
+          : [...state.items, { ...action.item, cantidad: 1 }],
+      };
+    }
+    case "increment":
+      return {
+        items: state.items.map((i) =>
+          i.productoId === action.productoId ? { ...i, cantidad: i.cantidad + 1 } : i,
+        ),
+      };
+    case "decrement":
+      return {
+        items: state.items
+          .map((i) => (i.productoId === action.productoId ? { ...i, cantidad: i.cantidad - 1 } : i))
+          .filter((i) => i.cantidad > 0),
+      };
+    case "remove":
+      return { items: state.items.filter((i) => i.productoId !== action.productoId) };
+    case "clear":
+      return initialCarritoState;
+  }
+}
+
+export function carritoSubtotal(items: CarritoItem[]): number {
+  return items.reduce((total, i) => total + i.precio * i.cantidad, 0);
 }
