@@ -13,4 +13,10 @@ describe("CafeFiltrado", () => {
 
     expect(cafe.calcularPrecio()).toBe(7700);
   });
+
+  it("calcula el precio de un filtrado mediano de Etiopía", () => {
+    const cafe = new CafeFiltrado(3, "mediano", "etiopia");
+
+    expect(cafe.calcularPrecio()).toBe(6800);
+  });
 });
