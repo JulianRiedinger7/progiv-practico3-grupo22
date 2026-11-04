@@ -19,9 +19,19 @@ export abstract class Cafe extends Producto {
   }
 
   calcularPrecio(): number {
+    const gramos = this.gramosPorTamano[this.tamano];
+    const precioPorGramo = this.precioPorGramo[this.variedad];
+
+    if (gramos === undefined) {
+      throw new Error(`Tamaño de café no soportado: ${this.tamano}`);
+    }
+
+    if (precioPorGramo === undefined) {
+      throw new Error(`Variedad de café no soportada: ${this.variedad}`);
+    }
+
     return (
-      this.gramosPorTamano[this.tamano] * this.precioPorGramo[this.variedad] +
-      this.precioBase
+      gramos * precioPorGramo + this.precioBase
     );
   }
 }
