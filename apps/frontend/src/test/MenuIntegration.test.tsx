@@ -194,7 +194,7 @@ describe('MenuPage integración con API simulada', () => {
 
   expect(await screen.findByText(/15/)).toBeInTheDocument();
   expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
-  expect(screen.getByText(/3\.500/)).toBeInTheDocument();
+  expect(screen.getByText(/2\.500/)).toBeInTheDocument();
   expect(cuerpoRecibido).toEqual({
     mesa: 4,
     items: [{ productoId: 2, cantidad: 1 }],

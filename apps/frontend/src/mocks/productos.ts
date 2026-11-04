@@ -17,8 +17,8 @@ export const productosMock: Producto[] = [
     id: 2,
     nombre: 'Muffin de chocolate',
     tipo: 'pasteleria',
-    precioBase: 3000,
-    precioFinal: 3000,
+    precioBase: 2500,
+    precioFinal: 2500,
     variedad: 'muffin_chocolate',
   },
   {

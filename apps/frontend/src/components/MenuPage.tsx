@@ -6,6 +6,7 @@ import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
+import { crearPedido, type PedidoCreado } from '../services/pedidoService';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -13,13 +14,18 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
   maximumFractionDigits: 0,
 });
 
+
+
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
+  const [mesaInput, setMesaInput] = useState(String(mesa ?? ''));
+  const [pedido, setPedido] = useState<PedidoCreado | null>(null);
+  const { dispatch, items } = useCarrito();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
-  const { dispatch } = useCarrito();
+  // const { dispatch } = useCarrito();
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
   const agregarAlPedido = useCallback(
@@ -37,10 +43,15 @@ function MenuPageContent() {
     [dispatch],
   );
 
-  const confirmarPedido = useCallback(() => {
-    dispatch({ type: 'clear' });
-    setConfirmado(true);
-  }, [dispatch]);
+  const confirmarPedido = useCallback(async () => {
+  const creado = await crearPedido({
+    mesa: Number(mesaInput),
+    items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
+  });
+
+  dispatch({ type: 'clear' });
+  setPedido(creado);
+}, [dispatch, items, mesaInput]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -67,60 +78,86 @@ function MenuPageContent() {
               Productos
             </h2>
 
-            <CafeSelector productos={productos} onAgregar={agregarAlPedido} />
+            {!pedido && (
+              <>
+                <CafeSelector productos={productos} onAgregar={agregarAlPedido} />
 
-            {loading && (
-              <p className='alert alert-info' role='status'>
-                Cargando productos...
-              </p>
-            )}
-            {!loading && error && (
-              <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
-                <p role='alert' className='mb-0'>No se pudieron cargar los productos</p>
-                <button type='button' className='btn btn-primary' onClick={cargarProductos}>
-                  Reintentar
-                </button>
-              </div>
-            )}
-            {!loading && !error && productos.length === 0 && (
-              <p className='alert alert-light border'>No hay productos disponibles</p>
-            )}
+                {loading && (
+                  <p className='alert alert-info' role='status'>
+                    Cargando productos...
+                  </p>
+                )}
+                {!loading && error && (
+                  <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
+                    <p role='alert' className='mb-0'>No se pudieron cargar los productos</p>
+                    <button type='button' className='btn btn-primary' onClick={cargarProductos}>
+                      Reintentar
+                    </button>
+                  </div>
+                )}
+                {!loading && !error && productos.length === 0 && (
+                  <p className='alert alert-light border'>No hay productos disponibles</p>
+                )}
 
-            {!loading && !error && productosPasteleria.length > 0 && (
-              <section className='mt-5' aria-labelledby='pasteleria-title'>
-                <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
-                  Pastelería
-                </h3>
-                <div className='row row-cols-1 row-cols-sm-2 g-3'>
-                  {productosPasteleria.map((producto) => (
-                    <div className='col' key={producto.id}>
-                      <article className='card h-100 border-0 bg-light shadow-sm'>
-                        <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
-                          <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
-                          <p className='card-text h5 fw-bold text-primary mb-0'>
-                            {formatoPrecio.format(producto.precioFinal)}
-                          </p>
-                          <button
-                            type='button'
-                            className='btn btn-primary'
-                            onClick={() => agregarAlPedido(producto)}
-                          >
-                            Agregar al pedido
-                          </button>
+                {!loading && !error && productosPasteleria.length > 0 && (
+                  <section className='mt-5' aria-labelledby='pasteleria-title'>
+                    <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
+                      Pastelería
+                    </h3>
+                    <div className='row row-cols-1 row-cols-sm-2 g-3'>
+                      {productosPasteleria.map((producto) => (
+                        <div className='col' key={producto.id}>
+                          <article className='card h-100 border-0 bg-light shadow-sm'>
+                            <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
+                              <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
+                              <p className='card-text h5 fw-bold text-primary mb-0'>
+                                {formatoPrecio.format(producto.precioFinal)}
+                              </p>
+                              <button
+                                type='button'
+                                className='btn btn-primary'
+                                onClick={() => agregarAlPedido(producto)}
+                              >
+                                Agregar al pedido
+                              </button>
+                            </div>
+                          </article>
                         </div>
-                      </article>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </section>
+                  </section>
+                )}
+              </>
             )}
-
-            <div className='mt-4'>
-              <Carrito onConfirm={confirmarPedido} />
-              {confirmado && (
-                <p className='alert alert-success mt-3 mb-0' role='status'>
-                  ¡Pedido confirmado!
-                </p>
+            <div>
+              {pedido ? (
+                <section>
+                  <div className='alert alert-success mt-3 mb-0' role='status'>
+                    <p className='fw-bold mb-1'>¡Pedido confirmado!</p>
+                    <p className='mb-0'>Pedido N° {pedido.numeroPedido}</p>
+                    <p className='mb-0'>Mesa: {Number(mesaInput)}</p>
+                    <p className='mb-0'>Estado: {pedido.estado}</p>
+                    <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
+                  </div>
+                </section>
+              ) : (
+                <>
+                  <label htmlFor='mesa'>Mesa</label>
+                  <input
+                    id='mesa'
+                    name='mesa'
+                    value={mesaInput}
+                    onChange={(e) => setMesaInput(e.target.value)}
+                  />
+                  <div className='mt-4'>
+                    <Carrito onConfirm={confirmarPedido} pedidoConfirmado={!!pedido} />
+                    {confirmado && (
+                      <p className='alert alert-success mt-3 mb-0' role='status'>
+                        ¡Pedido confirmado!
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
             </div>
           </section>
