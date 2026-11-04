@@ -159,4 +159,45 @@ describe('MenuPage integración con API simulada', () => {
       await screen.findByRole('heading', { name: 'Espresso pocillo brasil' }),
     ).toBeInTheDocument();
   });
+
+  it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
+  const user = userEvent.setup();
+  let cuerpoRecibido: unknown;
+
+  server.use(
+    http.get('*/api/productos', () =>
+      HttpResponse.json([
+        {
+          id: 2,
+          nombre: 'Muffin de chocolate',
+          tipo: 'pasteleria',
+          precioBase: 2500,
+          precioFinal: 2500,
+          variedad: 'muffin_chocolate',
+        },
+      ]),
+    ),
+    http.post('*/api/pedidos', async ({ request }) => {
+      cuerpoRecibido = await request.json();
+      return HttpResponse.json(
+        { numeroPedido: 15, estado: 'pendiente', total: 2500 },
+        { status: 201 },
+      );
+    }),
+  );
+
+  render(<MenuPage />);
+
+  await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+  await user.type(screen.getByLabelText('Mesa'), '4');
+  await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+  expect(await screen.findByText(/15/)).toBeInTheDocument();
+  expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
+  expect(screen.getByText(/2\.500/)).toBeInTheDocument();
+  expect(cuerpoRecibido).toEqual({
+    mesa: 4,
+    items: [{ productoId: 2, cantidad: 1 }],
+  });
+});
 });
