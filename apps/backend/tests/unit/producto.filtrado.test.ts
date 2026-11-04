@@ -7,4 +7,10 @@ describe("CafeFiltrado", () => {
 
     expect(cafe.calcularPrecio()).toBe(4040);
   });
+
+  it("calcula el precio de un filtrado taza grande de Colombia", () => {
+    const cafe = new CafeFiltrado(2, "taza_grande", "colombia");
+
+    expect(cafe.calcularPrecio()).toBe(7700);
+  });
 });
