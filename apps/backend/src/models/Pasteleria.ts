@@ -5,6 +5,11 @@ export class Pasteleria {
   ) {}
 
   calcularPrecio(): number {
-    return 2500;
+    const preciosPorVariedad: Record<string, number> = {
+      muffin_chocolate: 2500,
+      torta_selva_negra: 4200,
+    };
+
+    return preciosPorVariedad[this.variedad];
   }
 }
