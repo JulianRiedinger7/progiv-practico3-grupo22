@@ -170,7 +170,7 @@ describe('MenuPage integración con API simulada', () => {
         {
           id: 2,
           nombre: 'Muffin de chocolate',
-          tipo: 'Pasteleria',
+          tipo: 'pasteleria',
           precioBase: 2500,
           precioFinal: 2500,
           variedad: 'muffin_chocolate',
