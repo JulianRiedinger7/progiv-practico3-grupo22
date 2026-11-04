@@ -7,4 +7,10 @@ describe("CafeEspresso", () => {
 
     expect(cafe.calcularPrecio()).toBe(6820);
   });
+
+  it("calcula el precio de un espresso mediano de Brasil", () => {
+    const cafe = new CafeEspresso(2, "mediano", "brasil");
+
+    expect(cafe.calcularPrecio()).toBe(6280);
+  });
 });
