@@ -1,15 +1,21 @@
-export class Pasteleria {
-  constructor(
-    public id: number,
-    public variedad: string,
-  ) {}
+import { Producto } from "./Producto";
 
-  calcularPrecio(): number {
+export class Pasteleria extends Producto {
+  constructor(public id: number, public variedad: string) {
     const preciosPorVariedad: Record<string, number> = {
       muffin_chocolate: 2500,
       torta_selva_negra: 4200,
     };
 
-    return preciosPorVariedad[this.variedad];
+    const nombreVariedad = variedad.replaceAll("_", " ");
+    super(
+      id,
+      `Pasteleria ${nombreVariedad}`,
+      preciosPorVariedad[variedad],
+    );
+  }
+
+  calcularPrecio(): number {
+    return this.precioBase;
   }
 }

@@ -1,22 +1,11 @@
-export class CafeFiltrado {
-  constructor(
-    public id: number,
-    public tamano: string,
-    public variedad: string,
-  ) {}
+import { Cafe } from "./Cafe";
 
-  calcularPrecio(): number {
-    const gramosPorTamano: Record<string, number> = {
+export class CafeFiltrado extends Cafe {
+  constructor(id: number, tamano: string, variedad: string) {
+    super(id, "Filtrado", 3200, tamano, variedad, {
       pocillo: 6,
       mediano: 15,
       taza_grande: 25,
-    };
-    const precioPorGramo: Record<string, number> = {
-      brasil: 140,
-      colombia: 180,
-      etiopia: 240,
-    };
-
-    return gramosPorTamano[this.tamano] * precioPorGramo[this.variedad] + 3200;
+    });
   }
 }
