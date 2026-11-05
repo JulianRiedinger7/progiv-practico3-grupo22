@@ -107,17 +107,34 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                 Elegí la variedad
               </h4>
               <div className='d-flex flex-wrap gap-2' role='group' aria-label='Variedad del café'>
-                {variedadesCafe.map(({ valor, etiqueta }) => (
-                  <button
-                    key={valor}
-                    type='button'
-                    className={`btn btn-outline-primary rounded-pill px-4 ${variedadSeleccionada === valor ? 'active' : ''}`}
-                    aria-pressed={variedadSeleccionada === valor}
-                    onClick={() => setVariedadSeleccionada(valor)}
-                  >
-                    {etiqueta}
-                  </button>
-                ))}
+                {variedadesCafe.map(({ valor, etiqueta }) => {
+                  const producto = buscarCafe(productos, {
+                    tipo: tipoSeleccionado,
+                    tamano: tamanoSeleccionado,
+                    variedad: valor,
+                  });
+
+                  return (
+                    <div className='d-flex flex-column align-items-start gap-1' key={valor}>
+                      <button
+                        type='button'
+                        className={`btn btn-outline-primary rounded-pill px-4 ${variedadSeleccionada === valor ? 'active' : ''}`}
+                        aria-pressed={variedadSeleccionada === valor}
+                        onClick={() => setVariedadSeleccionada(valor)}
+                      >
+                        {etiqueta}
+                      </button>
+                      {producto && (
+                        <div>
+                          <p className='small mb-0'>{producto.variedad.descripcion}</p>
+                          <p className='small fw-semibold mb-0'>
+                            {formatoPrecio.format(producto.precio)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -132,10 +149,9 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
           <div className='card-body d-flex flex-column flex-sm-row justify-content-between gap-3'>
             <div>
               <p className='small fw-semibold text-secondary text-uppercase mb-1'>Tu selección</p>
-              <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
-                {cafeSeleccionado.nombre}
-              </h4>
-                <p>{cafeSeleccionado.variedad.descripcion}</p>
+                <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
+                  {cafeSeleccionado.nombre}
+                </h4>
                 <button
                 type='button'
                 className='btn btn-primary'
@@ -144,9 +160,6 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                 Agregar al pedido
               </button>
             </div>
-            <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
-              {formatoPrecio.format(cafeSeleccionado.precio)}
-            </p>
           </div>
         </article>
       )}
