@@ -3,5 +3,5 @@ import { PedidoRepository } from "../repositories/pedido.repository";
 import { Reporte } from "../models/reporte";
 
 export interface ReporteJSON {
-
+    
  }
