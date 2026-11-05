@@ -7,6 +7,13 @@ import type {
 import type { IPedidoRepository } from '../repositories/pedido.repository';
 import type { IProductoRepository } from '../repositories/producto.repository';
 
+export class ProductoNoEncontradoError extends Error {
+  constructor(id: number) {
+    super(`Producto ${id} no encontrado`);
+    this.name = 'ProductoNoEncontradoError';
+  }
+}
+
 export interface PedidoConTotal {
   id: number;
   items: PedidoItem[];
@@ -71,7 +78,7 @@ export class PedidoService implements IPedidoService {
     const producto = this.productos.obtenerPorId(id);
 
     if (!producto) {
-      throw new Error(`Producto ${id} no encontrado`);
+      throw new ProductoNoEncontradoError(id);
     }
 
     return producto;

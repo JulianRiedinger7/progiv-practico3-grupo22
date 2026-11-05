@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import { z } from 'zod';
-import type { IPedidoService } from '../services/pedido.service';
+import {
+  ProductoNoEncontradoError,
+  type IPedidoService,
+} from '../services/pedido.service';
 import { responderErrorInterno } from '../utils/httpErrors';
 
 const nuevoPedidoSchema = z.object({
@@ -59,7 +62,11 @@ export class PedidoController {
       }
 
       return res.status(201).json(this.pedidos.crear(resultado.data));
-    } catch {
+    } catch (error) {
+      if (error instanceof ProductoNoEncontradoError) {
+        return res.status(400).json({ error: 'Producto no encontrado' });
+      }
+
       return responderErrorInterno(res);
     }
   };
