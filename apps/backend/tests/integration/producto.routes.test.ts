@@ -30,6 +30,16 @@ describe("Rutas de productos", () => {
     expect(respuesta.body.precio).toBe(5020);
   });
 
+  it("GET /productos/:id incluye gramos y descripción del origen", async () => {
+    const respuesta = await request(app).get("/productos/1");
+
+    expect(respuesta.body.gramosCafe).toBe(18);
+    expect(respuesta.body.variedad).toEqual({
+      nombre: "Brasil",
+      descripcion: "Acidez baja, cuerpo denso y notas de avellana",
+    });
+  });
+
   it("GET /productos/:id retorna 404 si el producto no existe", async () => {
     const respuesta = await request(app).get("/productos/999");
 
