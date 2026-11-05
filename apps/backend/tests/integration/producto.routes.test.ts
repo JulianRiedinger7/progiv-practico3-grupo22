@@ -20,6 +20,16 @@ describe('Rutas de productos', () => {
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toHaveLength(20);
+    expect(respuesta.body[0]).toEqual({
+      id: 1,
+      nombre: 'Espresso pocillo brasil',
+      tipo: 'espresso',
+      precioBase: 2500,
+      precioFinal: 5020,
+      tamano: 'pocillo',
+      variedad: 'brasil',
+      gramos: 18,
+    });
   });
 
   it('registra en SQLite los IDs del catálogo al iniciar la app', () => {
@@ -36,7 +46,16 @@ describe('Rutas de productos', () => {
     const respuesta = await request(app).get('/productos/1');
 
     expect(respuesta.status).toBe(200);
-    expect(respuesta.body.nombre).toBe('Espresso pocillo brasil');
+    expect(respuesta.body).toEqual({
+      id: 1,
+      nombre: 'Espresso pocillo brasil',
+      tipo: 'espresso',
+      precioBase: 2500,
+      precioFinal: 5020,
+      tamano: 'pocillo',
+      variedad: 'brasil',
+      gramos: 18,
+    });
   });
 
   it('GET /productos/:id retorna 404 si el producto no existe', async () => {
