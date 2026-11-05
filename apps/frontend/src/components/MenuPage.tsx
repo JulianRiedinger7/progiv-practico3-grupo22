@@ -36,7 +36,7 @@ function MenuPageContent() {
         item: {
           productoId: producto.id,
           nombre: producto.nombre,
-          precio: producto.precioFinal,
+          precio: producto.precio,
         },
       });
     },
@@ -111,7 +111,7 @@ function MenuPageContent() {
                             <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
                               <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
                               <p className='card-text h5 fw-bold text-primary mb-0'>
-                                {formatoPrecio.format(producto.precioFinal)}
+                                {formatoPrecio.format(producto.precio)}
                               </p>
                               <button
                                 type='button'

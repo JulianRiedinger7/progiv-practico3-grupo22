@@ -35,19 +35,22 @@ describe('MenuPage integración con API simulada', () => {
           {
             id: 1,
             nombre: 'Espresso pocillo brasil',
-            tipo: 'espresso',
+            tipo: 'expreso',
             precioBase: 2500,
-            precioFinal: 5020,
+            precio: 5020,
             tamano: 'pocillo',
-            variedad: 'brasil',
-            gramos: 18,
+            variedad: {
+              nombre: 'Brasil',
+              descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+            },
+            gramosCafe: 18,
           },
           {
             id: 2,
             nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
-            precioBase: 3000,
-            precioFinal: 3000,
+            precioBase: 2500,
+            precio: 2500,
             variedad: 'muffin_chocolate',
           },
           {
@@ -55,7 +58,7 @@ describe('MenuPage integración con API simulada', () => {
             nombre: 'Pasteleria torta selva_negra',
             tipo: 'pasteleria',
             precioBase: 4200,
-            precioFinal: 4200,
+            precio: 4200,
             variedad: 'torta_selva_negra',
           },
         ]),
@@ -66,7 +69,7 @@ describe('MenuPage integración con API simulada', () => {
 
     expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
     expect(screen.queryByText('Espresso pocillo brasil')).not.toBeInTheDocument();
-    expect(screen.getByText(/3\.000/)).toBeInTheDocument();
+    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
     expect(screen.getByText(/4\.200/)).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(2);
   });
@@ -152,12 +155,15 @@ describe('MenuPage integración con API simulada', () => {
           {
             id: 1,
             nombre: 'Espresso pocillo brasil',
-            tipo: 'espresso',
+            tipo: 'expreso',
             precioBase: 2500,
-            precioFinal: 5020,
+            precio: 5020,
             tamano: 'pocillo',
-            variedad: 'brasil',
-            gramos: 18,
+            variedad: {
+              nombre: 'Brasil',
+              descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+            },
+            gramosCafe: 18,
           },
         ]);
       }),
@@ -194,7 +200,7 @@ describe('MenuPage integración con API simulada', () => {
           nombre: 'Muffin de chocolate',
           tipo: 'pasteleria',
           precioBase: 2500,
-          precioFinal: 2500,
+          precio: 2500,
           variedad: 'muffin_chocolate',
         },
       ]),

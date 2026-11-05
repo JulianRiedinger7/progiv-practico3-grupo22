@@ -35,7 +35,9 @@ type CafeSelectorProps = {
 export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
-  const [variedadSeleccionada, setVariedadSeleccionada] = useState<Cafe['variedad'] | null>(null);
+  const [variedadSeleccionada, setVariedadSeleccionada] = useState<
+    Cafe['variedad']['nombre'] | null
+  >(null);
   const cafeSeleccionado =
     tipoSeleccionado && tamanoSeleccionado && variedadSeleccionada
       ? buscarCafe(productos, {

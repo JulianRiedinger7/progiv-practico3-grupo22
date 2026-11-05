@@ -3,12 +3,15 @@ import type { Producto } from '../schemas/producto';
 export const productoEspressoMock: Producto = {
   id: 1,
   nombre: 'Espresso pocillo brasil',
-  tipo: 'espresso',
+  tipo: 'expreso',
   precioBase: 2500,
-  precioFinal: 5020,
+  precio: 5020,
   tamano: 'pocillo',
-  variedad: 'brasil',
-  gramos: 18,
+  variedad: {
+    nombre: 'Brasil',
+    descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+  },
+  gramosCafe: 18,
 };
 
 export const productosMock: Producto[] = [
@@ -18,7 +21,7 @@ export const productosMock: Producto[] = [
     nombre: 'Muffin de chocolate',
     tipo: 'pasteleria',
     precioBase: 2500,
-    precioFinal: 2500,
+    precio: 2500,
     variedad: 'muffin_chocolate',
   },
   {
@@ -26,7 +29,7 @@ export const productosMock: Producto[] = [
     nombre: 'Torta selva negra',
     tipo: 'pasteleria',
     precioBase: 4200,
-    precioFinal: 4200,
+    precio: 4200,
     variedad: 'torta_selva_negra',
   },
 ];
