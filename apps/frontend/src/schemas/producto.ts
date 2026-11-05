@@ -1,25 +1,30 @@
-import { z } from 'zod';
+import { z } from "zod";
+
+const variedadCafeSchema = z.object({
+  nombre: z.enum(["Brasil", "Colombia", "Etiopía"]),
+  descripcion: z.string().min(1),
+});
 
 const productoComunSchema = z.object({
   id: z.number().int().positive(),
   nombre: z.string().min(1),
   precioBase: z.number().nonnegative(),
-  precioFinal: z.number().nonnegative(),
+  precio: z.number().nonnegative(),
 });
 
 const productoCafeSchema = productoComunSchema.extend({
-  tipo: z.enum(['espresso', 'filtrado']),
-  tamano: z.enum(['pocillo', 'mediano', 'taza_grande']),
-  variedad: z.enum(['brasil', 'colombia', 'etiopia']),
-  gramos: z.number().positive(),
+  tipo: z.enum(["expreso", "filtrado"]),
+  tamano: z.enum(["pocillo", "mediano", "taza_grande"]),
+  gramosCafe: z.number().positive(),
+  variedad: variedadCafeSchema,
 });
 
 const productoPasteleriaSchema = productoComunSchema.extend({
-  tipo: z.literal('pasteleria'),
-  variedad: z.enum(['muffin_chocolate', 'torta_selva_negra']),
+  tipo: z.literal("pasteleria"),
+  variedad: z.enum(["muffin_chocolate", "torta_selva_negra"]),
 });
 
-export const productoSchema = z.discriminatedUnion('tipo', [
+export const productoSchema = z.discriminatedUnion("tipo", [
   productoCafeSchema,
   productoPasteleriaSchema,
 ]);
