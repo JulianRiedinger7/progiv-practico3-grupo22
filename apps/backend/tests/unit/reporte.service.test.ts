@@ -42,7 +42,7 @@ describe('ReporteService', () => {
       } as unknown as Producto)),
     };
 
-    reporteService = new ReporteService();
+    reporteService = new ReporteService(pedidosRepository, productosRepository);
   });
 
   it('calcula la facturación total de los pedidos entregados', () => {
