@@ -17,15 +17,7 @@ export function createApp(databasePath?: string) {
   app.locals.db = db;
   const productoRepository = new ProductoRepository();
   const pedidoRepository = new PedidoRepository(db);
-  const pedidoService = new PedidoService(pedidoRepository, (id) => {
-    const producto = productoRepository.obtenerPorId(id);
-
-    if (!producto) {
-      throw new Error(`Producto ${id} no encontrado`);
-    }
-
-    return producto;
-  });
+  const pedidoService = new PedidoService(pedidoRepository, productoRepository);
   const pedidoController = new PedidoController(pedidoService);
   const productoController = new ProductoController(productoRepository);
 
