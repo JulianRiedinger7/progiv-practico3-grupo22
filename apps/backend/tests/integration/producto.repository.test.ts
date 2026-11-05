@@ -1,0 +1,14 @@
+import { describe, expect, it } from "vitest";
+import { ProductoRepository } from "../../src/repositories/producto.repository";
+
+describe("ProductoRepository", () => {
+  it("devuelve los productos del catálogo", () => {
+    const repository = new ProductoRepository();
+
+    expect(
+      repository
+        .obtenerTodos()
+        .some((producto) => producto.nombre === "Espresso pocillo brasil"),
+    ).toBe(true);
+  });
+});
