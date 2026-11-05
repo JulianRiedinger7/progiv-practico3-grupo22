@@ -8,4 +8,8 @@ export class CafeEspresso extends Cafe {
       taza_grande: 36,
     });
   }
+
+  getTipo(): 'espresso' {
+    return 'espresso';
+  }
 }

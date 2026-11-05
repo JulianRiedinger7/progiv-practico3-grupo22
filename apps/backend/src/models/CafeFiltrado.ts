@@ -8,4 +8,8 @@ export class CafeFiltrado extends Cafe {
       taza_grande: 25,
     });
   }
+
+  getTipo(): 'filtrado' {
+    return 'filtrado';
+  }
 }
