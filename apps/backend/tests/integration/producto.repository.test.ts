@@ -23,4 +23,10 @@ describe("ProductoRepository", () => {
 
     expect(repository.obtenerPorId(1)?.nombre).toBe("Espresso pocillo brasil");
   });
+
+  it("devuelve undefined cuando no existe el producto", () => {
+    const repository = new ProductoRepository();
+
+    expect(repository.obtenerPorId(999)).toBeUndefined();
+  });
 });
