@@ -87,4 +87,18 @@ describe('Rutas de pedidos', () => {
       total: 5020,
     });
   });
+
+  it('POST /pedidos rechaza un producto inexistente sin guardar el pedido', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 999, cantidad: 1 }] });
+
+    expect(respuesta.status).toBe(400);
+    expect(respuesta.body).toEqual({ error: 'Producto no encontrado' });
+
+    const resultado = app.locals.db
+      .prepare('SELECT COUNT(*) AS cantidad FROM pedidos')
+      .get() as { cantidad: number };
+    expect(resultado.cantidad).toBe(0);
+  });
 });
