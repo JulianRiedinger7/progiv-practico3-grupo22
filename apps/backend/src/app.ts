@@ -16,6 +16,13 @@ export function createApp(databasePath?: string) {
   initializeSchema(db);
   app.locals.db = db;
   const productoRepository = new ProductoRepository();
+  const registrarProducto = db.prepare(
+    'INSERT OR IGNORE INTO productos (id) VALUES (?)',
+  );
+  productoRepository
+    .obtenerTodos()
+    .forEach((producto) => registrarProducto.run(producto.id));
+
   const pedidoRepository = new PedidoRepository(db);
   const pedidoService = new PedidoService(pedidoRepository, productoRepository);
   const pedidoController = new PedidoController(pedidoService);
