@@ -73,4 +73,20 @@ describe('Rutas de pedidos', () => {
       ],
     });
   });
+
+  it('POST /pedidos crea un pedido y calcula su total', async () => {
+    app.locals.db.prepare('INSERT INTO productos (id) VALUES (?)').run(1);
+
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 1, cantidad: 1 }] });
+
+    expect(respuesta.status).toBe(201);
+    expect(respuesta.body).toEqual({
+      id: expect.any(Number),
+      items: [{ productoId: 1, cantidad: 1 }],
+      estado: 'pendiente',
+      total: 5020,
+    });
+  });
 });
