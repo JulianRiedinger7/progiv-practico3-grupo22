@@ -17,4 +17,10 @@ describe("ProductoRepository", () => {
 
     expect(repository.obtenerTodos()).toHaveLength(20);
   });
+
+  it("obtiene un producto por id", () => {
+    const repository = new ProductoRepository();
+
+    expect(repository.obtenerPorId(1)?.nombre).toBe("Espresso pocillo brasil");
+  });
 });
