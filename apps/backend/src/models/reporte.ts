@@ -15,19 +15,23 @@ export interface ProductoConPrecio {
 export type BuscarProducto = (productoId: number) => ProductoConPrecio;
 
 export class Reporte {
-  items: ItemReporte[] = [];
+  items: ItemReporte[];
+  private readonly pedidos: PedidoParaReporte[];
 
-    constructor(pedidos: PedidoParaReporte[] = []) {
-    this.items = pedidos
-      .filter((pedido) => pedido.estado === 'entregado')
-      .flatMap((pedido) => pedido.items);}
+  constructor(pedidos: PedidoParaReporte[] = []) {
+    this.pedidos = pedidos;
+    this.items = pedidos.flatMap((pedido) => pedido.items);
+  }
 
   calcularFacturacion(buscarProducto: BuscarProducto): number {
-    return this.items.reduce(
-      (total, item) =>
-        total + buscarProducto(item.productoId).calcularPrecio() * item.cantidad,
-      0,
-    );
+    return this.pedidos
+      .filter((pedido) => pedido.estado === 'entregado')
+      .flatMap((pedido) => pedido.items)
+      .reduce(
+        (total, item) =>
+          total + buscarProducto(item.productoId).calcularPrecio() * item.cantidad,
+        0,
+      );
   }
 
   productoMasVendido(): number | undefined {

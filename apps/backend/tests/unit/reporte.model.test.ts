@@ -18,10 +18,9 @@ describe('Reporte', () => {
     expect(reporte.calcularFacturacion(buscarProducto)).toBe(3550);
   });
 
-  it('da un reporte del producto más vendido', () => {
-    const PedidosItems = [pedido1.items, pedido2.items].flat();
+  it('da el producto más vendido de todos los pedidos', () => {
     const reporte = new Reporte([pedido1, pedido2, pedido3]);
 
-    expect(reporte.productoMasVendido()).toBe(5);
+    expect(reporte.productoMasVendido()).toBe(10);
   });
 });
