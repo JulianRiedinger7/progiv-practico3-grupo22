@@ -11,4 +11,10 @@ describe("ProductoRepository", () => {
         .some((producto) => producto.nombre === "Espresso pocillo brasil"),
     ).toBe(true);
   });
+
+  it("incluye todas las combinaciones de café y los productos de pastelería", () => {
+    const repository = new ProductoRepository();
+
+    expect(repository.obtenerTodos()).toHaveLength(20);
+  });
 });
