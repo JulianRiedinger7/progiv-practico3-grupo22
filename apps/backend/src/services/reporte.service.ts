@@ -1,7 +1,6 @@
-import { PedidoRepository } from "../repositories/pedido.repository";
-//import  {ProductoRepository} from "../repositories/producto.repository" cuando esté hecho
-import { Reporte } from "../models/reporte";
+import type { IPedidoRepository } from '../repositories/pedido.repository';
+import type { IProductoRepository } from '../repositories/producto.repository';
+import { Reporte, type ProductoConPrecio } from '../models/reporte';
+import { ProductoNoEncontradoError } from './pedido.service';
 
-export interface ReporteJSON {
-    
- }
+export class ReporteService {}
