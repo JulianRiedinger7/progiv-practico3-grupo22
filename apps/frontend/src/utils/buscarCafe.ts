@@ -1,22 +1,24 @@
 import type { Producto } from '../schemas/producto';
 
+type Cafe = Exclude<Producto, { tipo: "pasteleria" }>;
+
 type CaracteristicasCafe = {
-  tipo: string;
-  tamano: string;
-  variedad: string;
+  tipo: Cafe["tipo"];
+  tamano: Cafe["tamano"];
+  variedad: Cafe["variedad"]["nombre"];
 };
 
 export function buscarCafe(
   productos: Producto[],
   caracteristicas: CaracteristicasCafe,
-): Producto | undefined {
-  return productos.find((p) => {
+): Cafe | undefined {
+  return productos.find((p): p is Cafe => {
     if (p.tipo === 'pasteleria') return false;
 
     return (
       p.tipo === caracteristicas.tipo &&
       p.tamano === caracteristicas.tamano &&
-      p.variedad === caracteristicas.variedad
+      p.variedad.nombre === caracteristicas.variedad
     );
   });
 }

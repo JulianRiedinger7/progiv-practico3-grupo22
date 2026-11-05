@@ -11,7 +11,7 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
 const tiposCafe: { valor: Cafe['tipo']; etiqueta: string }[] = [
-  { valor: 'espresso', etiqueta: 'Expreso' },
+  { valor: 'expreso', etiqueta: 'Expreso' },
   { valor: 'filtrado', etiqueta: 'Filtrado' },
 ];
 
@@ -21,10 +21,10 @@ const tamanosCafe: { valor: Cafe['tamano']; etiqueta: string }[] = [
   { valor: 'taza_grande', etiqueta: 'Taza grande' },
 ];
 
-const variedadesCafe: { valor: Cafe['variedad']; etiqueta: string }[] = [
-  { valor: 'brasil', etiqueta: 'Brasil' },
-  { valor: 'colombia', etiqueta: 'Colombia' },
-  { valor: 'etiopia', etiqueta: 'Etiopía' },
+const variedadesCafe: { valor: Cafe['variedad']['nombre']; etiqueta: string }[] = [
+  { valor: 'Brasil', etiqueta: 'Brasil' },
+  { valor: 'Colombia', etiqueta: 'Colombia' },
+  { valor: 'Etiopía', etiqueta: 'Etiopía' },
 ];
 
 type CafeSelectorProps = {
@@ -133,7 +133,8 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
               <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
                 {cafeSeleccionado.nombre}
               </h4>
-              <button
+                <p>{cafeSeleccionado.variedad.descripcion}</p>
+                <button
                 type='button'
                 className='btn btn-primary'
                 onClick={() => onAgregar(cafeSeleccionado)}
@@ -142,7 +143,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
               </button>
             </div>
             <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
-              {formatoPrecio.format(cafeSeleccionado.precioFinal)}
+              {formatoPrecio.format(cafeSeleccionado.precio)}
             </p>
           </div>
         </article>
