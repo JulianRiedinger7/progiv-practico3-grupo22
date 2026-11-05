@@ -5,4 +5,8 @@ export class ProductoRepository {
   obtenerTodos(): Producto[] {
     return catalogo;
   }
+
+  obtenerPorId(id: number): Producto | undefined {
+    return catalogo.find((producto) => producto.id === id);
+  }
 }
