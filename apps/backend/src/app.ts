@@ -1,8 +1,11 @@
 import express from 'express';
 import { PedidoController } from './controllers/pedido.controller';
+import { ProductoController } from './controllers/producto.controller';
 import { createDb } from './db/connection';
 import { initializeSchema } from './db/schema';
+import { ProductoRepository } from './repositories/producto.repository';
 import { PedidoRepository } from './repositories/pedido.repository';
+import { crearProductoRouter } from './routes/producto.routes';
 import { crearPedidoRouter } from './routes/pedido.routes';
 import { PedidoService } from './services/pedido.service';
 
@@ -17,9 +20,12 @@ export function createApp(databasePath?: string) {
     throw new Error(`No se configuró la búsqueda del producto ${id}`);
   });
   const pedidoController = new PedidoController(pedidoService);
+  const productoRepository = new ProductoRepository();
+  const productoController = new ProductoController(productoRepository);
 
   app.use(express.json());
   app.use('/pedidos', crearPedidoRouter(pedidoController));
+  app.use('/productos', crearProductoRouter(productoController));
   
 
   return app;

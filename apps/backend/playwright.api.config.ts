@@ -15,7 +15,7 @@ export default defineConfig({
   webServer: process.env.E2E_API_URL
     ? undefined
     : {
-        command: 'pnpm start:test',
+        command: 'npm run start:test',
         url: `${baseURL}/pedidos`,
         reuseExistingServer: false,
         env: {
