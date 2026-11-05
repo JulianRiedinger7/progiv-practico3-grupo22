@@ -20,4 +20,11 @@ describe("Rutas de productos", () => {
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toHaveLength(20);
   });
+
+  it("GET /productos/:id retorna el producto existente", async () => {
+    const respuesta = await request(app).get("/productos/1");
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body.nombre).toBe("Espresso pocillo brasil");
+  });
 });
