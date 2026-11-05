@@ -6,6 +6,28 @@ import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
 describe('MenuPage integración con API simulada', () => {
+  it('muestra la pastelería y el precio recibido en el contrato actual de productos', async () => {
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 19,
+            nombre: 'Pasteleria muffin chocolate',
+            tipo: 'pasteleria',
+            precioBase: 2500,
+            variedad: 'muffin_chocolate',
+            precio: 2500,
+          },
+        ]),
+      ),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByText('Pasteleria muffin chocolate')).toBeInTheDocument();
+    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
+  });
+
   it('muestra la pastelería al abrir el menú sin seleccionar opciones', async () => {
     server.use(
       http.get('*/api/productos', () =>
