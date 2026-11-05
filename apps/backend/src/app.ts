@@ -8,6 +8,9 @@ import { PedidoRepository } from './repositories/pedido.repository';
 import { crearProductoRouter } from './routes/producto.routes';
 import { crearPedidoRouter } from './routes/pedido.routes';
 import { PedidoService } from './services/pedido.service';
+import { ReporteController } from './controllers/reporte.controller';
+import { crearReporteRouter } from './routes/reporte.routes';
+import { ReporteService } from './services/reporte.service';
 
 export function createApp(databasePath?: string) {
   const app = express();
@@ -27,11 +30,13 @@ export function createApp(databasePath?: string) {
   const pedidoService = new PedidoService(pedidoRepository, productoRepository);
   const pedidoController = new PedidoController(pedidoService);
   const productoController = new ProductoController(productoRepository);
+  const reporteService = new ReporteService(pedidoRepository, productoRepository);
+  const reporteController = new ReporteController(reporteService);
 
   app.use(express.json());
   app.use('/pedidos', crearPedidoRouter(pedidoController));
   app.use('/productos', crearProductoRouter(productoController));
-  
+  app.use('/', crearReporteRouter(reporteController));
 
   return app;
 }
