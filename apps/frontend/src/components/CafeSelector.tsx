@@ -149,20 +149,23 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
           <div className='card-body d-flex flex-column flex-sm-row justify-content-between gap-3'>
             <div>
               <p className='small fw-semibold text-secondary text-uppercase mb-1'>Tu selección</p>
-                <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
-                  {cafeSeleccionado.nombre}
-                </h4>
-                <button
-                type='button'
-                className='btn btn-primary'
-                onClick={() => onAgregar(cafeSeleccionado)}
-              >
-                Agregar al pedido
-              </button>
+              <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
+                {cafeSeleccionado.nombre}
+              </h4>
             </div>
           </div>
         </article>
       )}
+      <button
+        type='button'
+        className='btn btn-primary'
+        disabled={!cafeSeleccionado}
+        onClick={() => {
+          if (cafeSeleccionado) onAgregar(cafeSeleccionado);
+        }}
+      >
+        Agregar al pedido
+      </button>
     </div>
   );
 }
