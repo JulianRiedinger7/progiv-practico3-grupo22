@@ -26,6 +26,8 @@ describe("Rutas de productos", () => {
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body.nombre).toBe("Espresso pocillo brasil");
+    expect(respuesta.body.tipo).toBe("expreso");
+    expect(respuesta.body.precio).toBe(5020);
   });
 
   it("GET /productos/:id retorna 404 si el producto no existe", async () => {
