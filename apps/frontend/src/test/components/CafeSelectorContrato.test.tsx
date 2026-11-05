@@ -63,4 +63,60 @@ describe("CafeSelector con el contrato actual de productos", () => {
     expect(screen.getByText("Acidez baja, cuerpo denso y notas de avellana")).toBeInTheDocument();
     expect(screen.getByText(/4\.040/)).toBeInTheDocument();
   });
+
+  it("muestra la descripción de cada origen antes de seleccionarlo", async () => {
+    const user = userEvent.setup();
+    const productos: Producto[] = [
+      {
+        id: 1,
+        tipo: "expreso",
+        nombre: "Espresso Mediano Brasil",
+        precioBase: 2500,
+        tamano: "mediano",
+        gramosCafe: 27,
+        variedad: {
+          nombre: "Brasil",
+          descripcion: "Acidez baja, cuerpo denso y notas de avellana",
+        },
+        precio: 6280,
+      },
+      {
+        id: 2,
+        tipo: "expreso",
+        nombre: "Espresso Mediano Colombia",
+        precioBase: 2500,
+        tamano: "mediano",
+        gramosCafe: 27,
+        variedad: {
+          nombre: "Colombia",
+          descripcion: "Acidez media, cuerpo equilibrado y notas cítricas y florales",
+        },
+        precio: 7360,
+      },
+      {
+        id: 3,
+        tipo: "expreso",
+        nombre: "Espresso Mediano Etiopía",
+        precioBase: 2500,
+        tamano: "mediano",
+        gramosCafe: 27,
+        variedad: {
+          nombre: "Etiopía",
+          descripcion: "Acidez muy viva, cuerpo ligero y notas frutales",
+        },
+        precio: 8980,
+      },
+    ];
+
+    render(<CafeSelector productos={productos} onAgregar={() => undefined} />);
+
+    await user.click(screen.getByRole("button", { name: "Expreso" }));
+    await user.click(screen.getByRole("button", { name: "Mediano" }));
+
+    expect(screen.getByText("Acidez baja, cuerpo denso y notas de avellana")).toBeInTheDocument();
+    expect(
+      screen.getByText("Acidez media, cuerpo equilibrado y notas cítricas y florales"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Acidez muy viva, cuerpo ligero y notas frutales")).toBeInTheDocument();
+  });
 });
