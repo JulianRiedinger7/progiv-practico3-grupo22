@@ -34,4 +34,13 @@ export abstract class Cafe extends Producto {
       gramos * precioPorGramo + this.precioBase
     );
   }
+
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      tamano: this.tamano,
+      variedad: this.variedad,
+      gramos: this.gramosPorTamano[this.tamano],
+    };
+  }
 }

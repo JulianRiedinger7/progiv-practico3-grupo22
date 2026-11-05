@@ -1,11 +1,18 @@
 import type {
-  BuscarProducto,
   EstadoPedido,
   NuevoPedido,
   PedidoItem,
   ProductoConPrecio,
 } from '../models/pedido';
 import type { IPedidoRepository } from '../repositories/pedido.repository';
+import type { IProductoRepository } from '../repositories/producto.repository';
+
+export class ProductoNoEncontradoError extends Error {
+  constructor(id: number) {
+    super(`Producto ${id} no encontrado`);
+    this.name = 'ProductoNoEncontradoError';
+  }
+}
 
 export interface PedidoConTotal {
   id: number;
@@ -23,7 +30,7 @@ export interface IPedidoService {
 export class PedidoService implements IPedidoService {
   constructor(
     private readonly pedidos: IPedidoRepository,
-    private readonly buscarProducto: BuscarProducto,
+    private readonly productos: IProductoRepository,
   ) {}
 
   obtenerTodos(): PedidoConTotal[] {
@@ -31,7 +38,7 @@ export class PedidoService implements IPedidoService {
       id: pedido.getId(),
       items: pedido.getItems(),
       estado: pedido.getEstado(),
-      total: pedido.calcularTotal(this.buscarProducto),
+      total: pedido.calcularTotal((id) => this.obtenerProducto(id)),
     }));
   }
 
@@ -44,7 +51,7 @@ export class PedidoService implements IPedidoService {
       id: pedido.getId(),
       items: pedido.getItems(),
       estado: pedido.getEstado(),
-      total: pedido.calcularTotal(this.buscarProducto),
+      total: pedido.calcularTotal((id) => this.obtenerProducto(id)),
     };
   }
 
@@ -53,7 +60,7 @@ export class PedidoService implements IPedidoService {
 
     pedido.items.forEach((item) => {
       if (!productos.has(item.productoId)) {
-        productos.set(item.productoId, this.buscarProducto(item.productoId));
+        productos.set(item.productoId, this.obtenerProducto(item.productoId));
       }
     });
 
@@ -65,5 +72,15 @@ export class PedidoService implements IPedidoService {
       estado: nuevo.getEstado(),
       total: nuevo.calcularTotal((id) => productos.get(id)!),
     };
+  }
+
+  private obtenerProducto(id: number): ProductoConPrecio {
+    const producto = this.productos.obtenerPorId(id);
+
+    if (!producto) {
+      throw new ProductoNoEncontradoError(id);
+    }
+
+    return producto;
   }
 }

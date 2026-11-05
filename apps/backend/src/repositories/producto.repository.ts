@@ -1,7 +1,12 @@
 import { catalogo } from "../config/catalogo";
 import type { Producto } from "../models/Producto";
 
-export class ProductoRepository {
+export interface IProductoRepository {
+  obtenerTodos(): Producto[];
+  obtenerPorId(id: number): Producto | undefined;
+}
+
+export class ProductoRepository implements IProductoRepository {
   obtenerTodos(): Producto[] {
     return catalogo;
   }
