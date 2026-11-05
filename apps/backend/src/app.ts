@@ -15,12 +15,18 @@ export function createApp(databasePath?: string) {
   const db = createDb(databasePath);
   initializeSchema(db);
   app.locals.db = db;
+  const productoRepository = new ProductoRepository();
   const pedidoRepository = new PedidoRepository(db);
   const pedidoService = new PedidoService(pedidoRepository, (id) => {
-    throw new Error(`No se configuró la búsqueda del producto ${id}`);
+    const producto = productoRepository.obtenerPorId(id);
+
+    if (!producto) {
+      throw new Error(`Producto ${id} no encontrado`);
+    }
+
+    return producto;
   });
   const pedidoController = new PedidoController(pedidoService);
-  const productoRepository = new ProductoRepository();
   const productoController = new ProductoController(productoRepository);
 
   app.use(express.json());
