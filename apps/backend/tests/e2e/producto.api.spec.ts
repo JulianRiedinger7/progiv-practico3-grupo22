@@ -14,4 +14,11 @@ test.describe("API de productos", () => {
     expect(respuesta.status()).toBe(200);
     expect((await respuesta.json()).nombre).toBe("Espresso pocillo brasil");
   });
+
+  test("GET /productos/:id devuelve 404 si no existe", async ({ request }) => {
+    const respuesta = await request.get("/productos/999");
+
+    expect(respuesta.status()).toBe(404);
+    expect(await respuesta.json()).toEqual({ error: "Producto no encontrado" });
+  });
 });
