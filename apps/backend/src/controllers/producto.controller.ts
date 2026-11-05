@@ -7,4 +7,14 @@ export class ProductoController {
   obtenerTodos = (_req: Request, res: Response): Response => {
     return res.status(200).json(this.productos.obtenerTodos());
   };
+
+  obtenerPorId = (req: Request, res: Response): Response => {
+    const producto = this.productos.obtenerPorId(Number(req.params.id));
+
+    if (!producto) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    return res.status(200).json(producto);
+  };
 }
