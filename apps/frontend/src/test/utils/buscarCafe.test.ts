@@ -8,41 +8,47 @@ describe('buscarCafe', () => {
       {
         id: 4,
         nombre: 'Espresso mediano brasil',
-        tipo: 'espresso',
-        precioBase: 2500,
-        precioFinal: 6280,
-        tamano: 'mediano',
-        variedad: 'brasil',
-        gramos: 27,
+        tipo: 'expreso',
+        tamanio: 'mediano',
+        gramosCafe: 27,
+        variedad: {
+          nombre: 'Brasil',
+          descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+        },
+        precio: 6280,
       },
       {
         id: 5,
         nombre: 'Espresso mediano colombia',
-        tipo: 'espresso',
-        precioBase: 2500,
-        precioFinal: 7360,
-        tamano: 'mediano',
-        variedad: 'colombia',
-        gramos: 27,
+        tipo: 'expreso',
+        tamanio: 'mediano',
+        gramosCafe: 27,
+        variedad: {
+          nombre: 'Colombia',
+          descripcion: 'Dulzor a caramelo y acidez cítrica',
+        },
+        precio: 7360,
       },
       {
         id: 14,
         nombre: 'Filtrado mediano colombia',
         tipo: 'filtrado',
-        precioBase: 3200,
-        precioFinal: 5900,
-        tamano: 'mediano',
-        variedad: 'colombia',
-        gramos: 15,
+        tamanio: 'mediano',
+        gramosCafe: 15,
+        variedad: {
+          nombre: 'Colombia',
+          descripcion: 'Dulzor a caramelo y acidez cítrica',
+        },
+        precio: 5900,
       },
     ];
 
     expect(
       buscarCafe(productos, {
-        tipo: 'espresso',
-        tamano: 'mediano',
+        tipo: 'expreso',
+        tamanio: 'mediano',
         variedad: 'colombia',
       }),
-    ).toMatchObject({ id: 5, precioFinal: 7360 });
+    ).toMatchObject({ id: 5, precio: 7360 });
   });
 });
