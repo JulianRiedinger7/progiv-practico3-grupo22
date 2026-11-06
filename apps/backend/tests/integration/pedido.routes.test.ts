@@ -111,6 +111,7 @@ describe('Rutas de pedidos', () => {
       id: expect.any(Number),
       items: [{ productoId: 1, cantidad: 1 }],
       estado: 'pendiente',
+      mesaId: 5,
       total: 5020,
     });
   });
