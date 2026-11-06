@@ -134,7 +134,7 @@ function MenuPageContent() {
                 <section>
                   <div className='alert alert-success mt-3 mb-0' role='status'>
                     <p className='fw-bold mb-1'>¡Pedido confirmado!</p>
-                    <p className='mb-0'>Pedido N° {pedido.numeroPedido}</p>
+                    <p className='mb-0'>Pedido N° {pedido.id}</p>
                     <p className='mb-0'>Mesa: {Number(mesaInput)}</p>
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>

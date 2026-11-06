@@ -1,5 +1,5 @@
 export type PedidoCreado = {
-  numeroPedido: number;
+  id: number;
   estado: string;
   total: number;
 };

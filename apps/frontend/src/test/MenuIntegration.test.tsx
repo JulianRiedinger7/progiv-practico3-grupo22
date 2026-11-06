@@ -193,7 +193,7 @@ describe('MenuPage integración con API simulada', () => {
   await user.type(screen.getByLabelText('Mesa'), '4');
   await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
-  expect(await screen.findByText(/15/)).toBeInTheDocument();
+  expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
   expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
   expect(screen.getByText(/2\.500/)).toBeInTheDocument();
   expect(cuerpoRecibido).toEqual({
