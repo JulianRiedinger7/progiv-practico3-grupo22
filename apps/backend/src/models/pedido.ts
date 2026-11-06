@@ -47,6 +47,10 @@ export class Pedido {
     return this.estado;
   }
 
+  getMesaId(): number | undefined {
+    return this.mesaId;
+  }
+
   calcularTotal(buscarProducto: BuscarProducto): number {
     return this.items.reduce(
       (total, item) => total + buscarProducto(item.productoId).calcularPrecio() * item.cantidad,
