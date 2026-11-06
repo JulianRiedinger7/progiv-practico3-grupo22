@@ -12,7 +12,7 @@ export class ProductoController {
   obtenerTodos = (_req: Request, res: Response): Response => {
     return res
       .status(200)
-      .json(this.productos.obtenerTodos().map((producto) => this.serializar(producto)));
+      .json(this.productos.obtenerTodos().map((producto) => producto));
   };
 
   obtenerPorId = (req: Request, res: Response): Response => {
@@ -22,56 +22,56 @@ export class ProductoController {
       return res.status(404).json({ error: "Producto no encontrado" });
     }
 
-    return res.status(200).json(this.serializar(producto));
+    return res.status(200).json(producto);
   };
 
-  private serializar(producto: Producto) {
-    let tipo: string;
-    let gramosCafe: number | undefined;
+  // private serializar(producto: Producto) {
+  //   let tipo: string;
+  //   let gramosCafe: number | undefined;
 
-    if (producto instanceof CafeEspresso) {
-      tipo = "expreso";
-      gramosCafe = { pocillo: 18, mediano: 27, taza_grande: 36 }[producto.tamano];
-    } else if (producto instanceof CafeFiltrado) {
-      tipo = "filtrado";
-      gramosCafe = { pocillo: 6, mediano: 15, taza_grande: 25 }[producto.tamano];
-    } else {
-      tipo = "pasteleria";
-    }
+  //   if (producto instanceof CafeEspresso) {
+  //     tipo = "expreso";
+  //     gramosCafe = { pocillo: 18, mediano: 27, taza_grande: 36 }[producto.tamano];
+  //   } else if (producto instanceof CafeFiltrado) {
+  //     tipo = "filtrado";
+  //     gramosCafe = { pocillo: 6, mediano: 15, taza_grande: 25 }[producto.tamano];
+  //   } else {
+  //     tipo = "pasteleria";
+  //   }
 
-    return {
-      ...producto,
-      tipo,
-      precio: producto.calcularPrecio(),
-      ...(producto instanceof Cafe
-        ? {
-            gramosCafe,
-            variedad: {
-              nombre: this.nombreVariedad(producto.variedad),
-              descripcion: this.descripcionVariedad(producto.variedad),
-            },
-          }
-        : {}),
-    };
-  }
+  //   return {
+  //     ...producto,
+  //     tipo,
+  //     precio: producto.calcularPrecio(),
+  //     ...(producto instanceof Cafe
+  //       ? {
+  //           gramosCafe,
+  //           variedad: {
+  //             nombre: this.nombreVariedad(producto.variedad),
+  //             descripcion: this.descripcionVariedad(producto.variedad),
+  //           },
+  //         }
+  //       : {}),
+  //   };
+  // }
 
-  private nombreVariedad(variedad: string): string {
-    const nombres: Record<string, string> = {
-      brasil: "Brasil",
-      colombia: "Colombia",
-      etiopia: "Etiopía",
-    };
+  // private nombreVariedad(variedad: string): string {
+  //   const nombres: Record<string, string> = {
+  //     brasil: "Brasil",
+  //     colombia: "Colombia",
+  //     etiopia: "Etiopía",
+  //   };
 
-    return nombres[variedad];
-  }
+  //   return nombres[variedad];
+  // }
 
-  private descripcionVariedad(variedad: string): string {
-    const descripciones: Record<string, string> = {
-      brasil: "Acidez baja, cuerpo denso y notas de avellana",
-      colombia: "Acidez media, cuerpo equilibrado y notas cítricas y florales",
-      etiopia: "Acidez muy viva, cuerpo ligero y notas frutales",
-    };
+  // private descripcionVariedad(variedad: string): string {
+  //   const descripciones: Record<string, string> = {
+  //     brasil: "Acidez baja, cuerpo denso y notas de avellana",
+  //     colombia: "Acidez media, cuerpo equilibrado y notas cítricas y florales",
+  //     etiopia: "Acidez muy viva, cuerpo ligero y notas frutales",
+  //   };
 
-    return descripciones[variedad];
-  }
+  //   return descripciones[variedad];
+  // }
 }
