@@ -10,18 +10,20 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
+type VariedadCafe = 'brasil' | 'colombia' | 'etiopia';
+
 const tiposCafe: { valor: Cafe['tipo']; etiqueta: string }[] = [
-  { valor: 'espresso', etiqueta: 'Expreso' },
+  { valor: 'expreso', etiqueta: 'Expreso' },
   { valor: 'filtrado', etiqueta: 'Filtrado' },
 ];
 
-const tamanosCafe: { valor: Cafe['tamano']; etiqueta: string }[] = [
+const tamanosCafe: { valor: Cafe['tamanio']; etiqueta: string }[] = [
   { valor: 'pocillo', etiqueta: 'Pocillo' },
   { valor: 'mediano', etiqueta: 'Mediano' },
   { valor: 'taza_grande', etiqueta: 'Taza grande' },
 ];
 
-const variedadesCafe: { valor: Cafe['variedad']; etiqueta: string }[] = [
+const variedadesCafe: { valor: VariedadCafe; etiqueta: string }[] = [
   { valor: 'brasil', etiqueta: 'Brasil' },
   { valor: 'colombia', etiqueta: 'Colombia' },
   { valor: 'etiopia', etiqueta: 'Etiopía' },
@@ -34,13 +36,13 @@ type CafeSelectorProps = {
 
 export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
-  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
-  const [variedadSeleccionada, setVariedadSeleccionada] = useState<Cafe['variedad'] | null>(null);
+  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamanio'] | null>(null);
+  const [variedadSeleccionada, setVariedadSeleccionada] = useState<VariedadCafe | null>(null);
   const cafeSeleccionado =
     tipoSeleccionado && tamanoSeleccionado && variedadSeleccionada
       ? buscarCafe(productos, {
           tipo: tipoSeleccionado,
-          tamano: tamanoSeleccionado,
+          tamanio: tamanoSeleccionado,
           variedad: variedadSeleccionada,
         })
       : undefined;
@@ -133,6 +135,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
               <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
                 {cafeSeleccionado.nombre}
               </h4>
+              <p className='text-secondary mb-2'>{cafeSeleccionado.variedad.descripcion}</p>
               <button
                 type='button'
                 className='btn btn-primary'
@@ -142,7 +145,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
               </button>
             </div>
             <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
-              {formatoPrecio.format(cafeSeleccionado.precioFinal)}
+              {formatoPrecio.format(cafeSeleccionado.precio)}
             </p>
           </div>
         </article>

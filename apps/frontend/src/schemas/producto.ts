@@ -3,15 +3,17 @@ import { z } from 'zod';
 const productoComunSchema = z.object({
   id: z.number().int().positive(),
   nombre: z.string().min(1),
-  precioBase: z.number().nonnegative(),
-  precioFinal: z.number().nonnegative(),
+  precio: z.number().nonnegative(),
 });
 
 const productoCafeSchema = productoComunSchema.extend({
-  tipo: z.enum(['espresso', 'filtrado']),
-  tamano: z.enum(['pocillo', 'mediano', 'taza_grande']),
-  variedad: z.enum(['brasil', 'colombia', 'etiopia']),
-  gramos: z.number().positive(),
+  tipo: z.enum(['expreso', 'filtrado']),
+  tamanio: z.enum(['pocillo', 'mediano', 'taza_grande']),
+  gramosCafe: z.number().positive(),
+  variedad: z.object({
+    nombre: z.string().min(1),
+    descripcion: z.string().min(1),
+  }),
 });
 
 const productoPasteleriaSchema = productoComunSchema.extend({
