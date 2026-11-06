@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { Cafe } from "../models/Cafe";
 import { CafeEspresso } from "../models/CafeEspresso";
-import { CafeFiltrado } from "../models/CafeFiltrado";
 import { Pasteleria } from "../models/Pasteleria";
 import type { Producto } from "../models/Producto";
 import type { ProductoRepository } from "../repositories/producto.repository";
@@ -26,32 +25,29 @@ export class ProductoController {
   };
 
   private serializar(producto: Producto) {
-    let tipo: string;
-    let gramosCafe: number | undefined;
-
-    if (producto instanceof CafeEspresso) {
-      tipo = "expreso";
-      gramosCafe = { pocillo: 18, mediano: 27, taza_grande: 36 }[producto.tamano];
-    } else if (producto instanceof CafeFiltrado) {
-      tipo = "filtrado";
-      gramosCafe = { pocillo: 6, mediano: 15, taza_grande: 25 }[producto.tamano];
-    } else {
-      tipo = "pasteleria";
+    if (producto instanceof Cafe) {
+      return {
+        id: producto.id,
+        nombre: producto.nombre,
+        tipo: producto instanceof CafeEspresso ? "expreso" : "filtrado",
+        tamanio: producto.tamano,
+        gramosCafe: producto.getGramos(),
+        variedad: {
+          nombre: this.nombreVariedad(producto.variedad),
+          descripcion: this.descripcionVariedad(producto.variedad),
+        },
+        precio: producto.calcularPrecio(),
+      };
     }
 
+    const pasteleria = producto as Pasteleria;
+
     return {
-      ...producto,
-      tipo,
-      precio: producto.calcularPrecio(),
-      ...(producto instanceof Cafe
-        ? {
-            gramosCafe,
-            variedad: {
-              nombre: this.nombreVariedad(producto.variedad),
-              descripcion: this.descripcionVariedad(producto.variedad),
-            },
-          }
-        : {}),
+      id: pasteleria.id,
+      nombre: pasteleria.nombre,
+      tipo: "pasteleria",
+      variedad: pasteleria.variedad,
+      precio: pasteleria.calcularPrecio(),
     };
   }
 

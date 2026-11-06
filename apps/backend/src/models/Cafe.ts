@@ -18,6 +18,10 @@ export abstract class Cafe extends Producto {
     super(id, `${nombre} ${tamano} ${variedad}`, precioBase);
   }
 
+  getGramos(): number {
+    return this.gramosPorTamano[this.tamano];
+  }
+
   calcularPrecio(): number {
     const gramos = this.gramosPorTamano[this.tamano];
     const precioPorGramo = this.precioPorGramo[this.variedad];

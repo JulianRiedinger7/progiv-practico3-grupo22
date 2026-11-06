@@ -23,12 +23,14 @@ describe('Rutas de productos', () => {
     expect(respuesta.body[0]).toEqual({
       id: 1,
       nombre: 'Espresso pocillo brasil',
-      tipo: 'espresso',
-      precioBase: 2500,
-      precioFinal: 5020,
-      tamano: 'pocillo',
-      variedad: 'brasil',
-      gramos: 18,
+      tipo: 'expreso',
+      tamanio: 'pocillo',
+      gramosCafe: 18,
+      variedad: {
+        nombre: 'Brasil',
+        descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+      },
+      precio: 5020,
     });
   });
 
@@ -49,12 +51,14 @@ describe('Rutas de productos', () => {
     expect(respuesta.body).toEqual({
       id: 1,
       nombre: 'Espresso pocillo brasil',
-      tipo: 'espresso',
-      precioBase: 2500,
-      precioFinal: 5020,
-      tamano: 'pocillo',
-      variedad: 'brasil',
-      gramos: 18,
+      tipo: 'expreso',
+      tamanio: 'pocillo',
+      gramosCafe: 18,
+      variedad: {
+        nombre: 'Brasil',
+        descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
+      },
+      precio: 5020,
     });
   });
 
