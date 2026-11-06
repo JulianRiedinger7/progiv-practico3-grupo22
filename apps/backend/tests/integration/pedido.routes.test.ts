@@ -96,9 +96,23 @@ describe('Rutas de pedidos', () => {
     expect(respuesta.status).toBe(400);
     expect(respuesta.body).toEqual({ error: 'Producto no encontrado' });
 
-    const resultado = app.locals.db
-      .prepare('SELECT COUNT(*) AS cantidad FROM pedidos')
-      .get() as { cantidad: number };
+    const resultado = app.locals.db.prepare('SELECT COUNT(*) AS cantidad FROM pedidos').get() as {
+      cantidad: number;
+    };
     expect(resultado.cantidad).toBe(0);
+  });
+
+  it('POST /pedidos acepta mesaId opcional', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 1, cantidad: 1 }], mesaId: 5 });
+    expect(respuesta.status).toBe(201);
+    expect(respuesta.body).toEqual({
+      id: expect.any(Number),
+      items: [{ productoId: 1, cantidad: 1 }],
+      estado: 'pendiente',
+      mesaId: 5,
+      total: 5020,
+    });
   });
 });
