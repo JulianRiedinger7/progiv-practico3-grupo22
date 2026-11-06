@@ -31,7 +31,7 @@ describe('Rutas reporte', () => {
     insertarItem.run(entregado.lastInsertRowid, 1, 1);
     insertarItem.run(pendiente.lastInsertRowid, 20, 5);
 
-    const respuesta = await request(app).get('/reporte/facturacion');
+    const respuesta = await request(app).get('/reportes/facturacion');
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ facturacionTotal: 5020 });
@@ -53,7 +53,7 @@ describe('Rutas reporte', () => {
     insertarItem.run(pendiente.lastInsertRowid, 20, 5);
     insertarItem.run(pendiente.lastInsertRowid, 5, 100);
 
-    const respuesta = await request(app).get('/reporte/producto_mas_vendido');
+    const respuesta = await request(app).get('/reportes/producto_mas_vendido');
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ productoMasVendido: 5 });
