@@ -26,8 +26,11 @@ export class Pasteleria extends Producto {
 
   toJSON() {
     return {
-      ...super.toJSON(),
+      id: this.id,
+      nombre: this.nombre,
+      tipo: this.getTipo(),
       variedad: this.variedad,
+      precio: this.calcularPrecio(),
     };
   }
 }

@@ -39,23 +39,30 @@ describe("Producto Model", () => {
     expect(cafeEspresso.toJSON()).toEqual({
       id: 1,
       nombre: "Espresso pocillo etiopia",
-      tipo: "espresso",
-      precioBase: 2500,
-      precioFinal: 6820,
-      tamano: "pocillo",
-      variedad: "etiopia",
-      gramos: 18,
+      tipo: "expreso",
+      tamanio: "pocillo",
+      gramosCafe: 18,
+      variedad: {
+        nombre: "Etiopía",
+        descripcion: "Acidez muy viva, cuerpo ligero y notas frutales",
+      },
+      precio: 6820,
     });
     expect(cafeFiltrado.toJSON()).toMatchObject({
       id: 10,
       tipo: "filtrado",
-      precioFinal: 4040,
-      gramos: 6,
+      tamanio: "pocillo",
+      gramosCafe: 6,
+      variedad: {
+        nombre: "Brasil",
+        descripcion: "Acidez baja, cuerpo denso y notas de avellana",
+      },
+      precio: 4040,
     });
     expect(pasteleria.toJSON()).toMatchObject({
       id: 19,
       tipo: "pasteleria",
-      precioFinal: 2500,
+      precio: 2500,
       variedad: "muffin_chocolate",
     });
   });

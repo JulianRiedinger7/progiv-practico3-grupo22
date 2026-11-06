@@ -19,13 +19,12 @@ export abstract class Producto {
     return this.nombre;
   }
 
-  toJSON() {
+  toJSON(): object {
     return {
       id: this.id,
       nombre: this.nombre,
       tipo: this.getTipo(),
-      precioBase: this.precioBase,
-      precioFinal: this.calcularPrecio(),
+      precio: this.calcularPrecio(),
     };
   }
 }

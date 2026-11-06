@@ -62,6 +62,19 @@ describe('Rutas de productos', () => {
     });
   });
 
+  it('GET /productos/:id serializa una pastelería', async () => {
+    const respuesta = await request(app).get('/productos/19');
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body).toEqual({
+      id: 19,
+      nombre: 'Pasteleria muffin chocolate',
+      tipo: 'pasteleria',
+      variedad: 'muffin_chocolate',
+      precio: 2500,
+    });
+  });
+
   it('GET /productos/:id retorna 404 si el producto no existe', async () => {
     const respuesta = await request(app).get('/productos/999');
 
