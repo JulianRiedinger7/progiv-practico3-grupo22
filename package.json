@@ -15,10 +15,9 @@
     "test:e2e:api": "pnpm --filter @cafeteria/backend test:e2e",
     "test:e2e:web": "pnpm --filter @cafeteria/frontend test:e2e",
     "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down",
-    "docker:test:unit": "docker compose --profile test run --rm test-runner pnpm test:unit",
-    "docker:test:integration": "docker compose --profile test run --rm test-runner pnpm test:integration",
-    "docker:test:e2e:api": "docker compose --profile test run --rm test-runner pnpm test:e2e:api",
-    "docker:test:e2e:web": "docker compose --profile test run --rm test-runner pnpm test:e2e:web"
+    "docker:down": "docker compose down"
+  },
+  "dependencies": {
+    "msw": "^3.0.3"
   }
 }

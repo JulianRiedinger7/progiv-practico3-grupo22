@@ -1,2 +1,75 @@
-@use "bootstrap/scss/bootstrap";
+@use "./styles/theme" as theme;
+@use "bootstrap/scss/bootstrap" with (
+  $primary: theme.$espresso,
+  $secondary: theme.$terracotta,
+  $success: theme.$olive,
+  $info: theme.$sage,
+  $warning: theme.$honey,
+  $danger: theme.$brick,
+  $light: theme.$cream,
+  $dark: theme.$ink,
+  $body-bg: theme.$paper,
+  $body-color: theme.$ink,
+  $border-color: theme.$line,
+  $font-family-sans-serif: theme.$font-body,
+  $headings-font-family: theme.$font-display,
+  $headings-font-weight: 600,
+  $border-radius: 0.75rem,
+  $border-radius-sm: 0.5rem,
+  $border-radius-lg: 1rem,
+  $border-radius-xl: 1.25rem,
+  $input-border-color: theme.$line,
+  $input-focus-border-color: theme.$terracotta,
+  $focus-ring-color: rgba(theme.$terracotta, 0.35)
+);
+
+:root {
+  color-scheme: light;
+  --cafe-espresso: #{theme.$espresso};
+  --cafe-terracotta: #{theme.$terracotta};
+  --cafe-olive: #{theme.$olive};
+  --cafe-sage: #{theme.$sage};
+  --cafe-honey: #{theme.$honey};
+  --cafe-cream: #{theme.$cream};
+  --cafe-paper: #{theme.$paper};
+  --cafe-ink: #{theme.$ink};
+  --cafe-muted: #{theme.$muted};
+  --cafe-line: #{theme.$line};
+}
+
+html {
+  min-width: 320px;
+  background: theme.$paper;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background: theme.$paper;
+  color: theme.$ink;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.08em;
+}
+
+:focus-visible {
+  outline: 0.2rem solid theme.$terracotta;
+  outline-offset: 0.15rem;
+}
+
+::selection {
+  background: theme.$espresso;
+  color: theme.$paper;
+}
 

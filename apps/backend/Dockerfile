@@ -1,14 +1,14 @@
 FROM node:22-bookworm-slim
 
 WORKDIR /workspace
-RUN npm install --global pnpm@12.15.0
+RUN corepack enable
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-EXPOSE 3000 5173
-
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@cafeteria/backend", "dev"]
