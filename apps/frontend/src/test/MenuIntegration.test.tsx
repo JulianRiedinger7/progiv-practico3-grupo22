@@ -181,7 +181,7 @@ describe('MenuPage integración con API simulada', () => {
     http.post('*/api/pedidos', async ({ request }) => {
       cuerpoRecibido = await request.json();
       return HttpResponse.json(
-        { numeroPedido: 15, estado: 'pendiente', total: 2500 },
+        { id: 15, tems:[{productoId: 2, cantidad: 1}], estado: 'pendiente', total: 2500 },
         { status: 201 },
       );
     }),
