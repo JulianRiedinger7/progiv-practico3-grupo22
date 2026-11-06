@@ -36,7 +36,7 @@ export function createApp(databasePath?: string) {
   app.use(express.json());
   app.use('/pedidos', crearPedidoRouter(pedidoController));
   app.use('/productos', crearProductoRouter(productoController));
-  app.use('/', crearReporteRouter(reporteController));
+  app.use('/reporte', crearReporteRouter(reporteController));
 
   return app;
 }

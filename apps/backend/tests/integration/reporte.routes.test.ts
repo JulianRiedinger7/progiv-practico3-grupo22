@@ -16,7 +16,7 @@ describe('Rutas reporte', () => {
 
   
 
-  it('GET /facturacion devuelve la facturación total de los pedidos entregados', async () => {
+  it('GET /reporte/facturacion devuelve la facturación total de los pedidos entregados', async () => {
     const entregado = app.locals.db
       .prepare("INSERT INTO pedidos (estado) VALUES ('entregado')")
       .run();
@@ -31,13 +31,13 @@ describe('Rutas reporte', () => {
     insertarItem.run(entregado.lastInsertRowid, 1, 1);
     insertarItem.run(pendiente.lastInsertRowid, 20, 5);
 
-    const respuesta = await request(app).get('/facturacion');
+    const respuesta = await request(app).get('/reporte/facturacion');
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ facturacionTotal: 5020 });
   });
 
-  it('GET /producto_mas_vendido devuelve el producto más vendido de todos los pedidos', async () => {
+  it('GET /reporte/producto_mas_vendido devuelve el producto más vendido de todos los pedidos', async () => {
     const entregado = app.locals.db
       .prepare("INSERT INTO pedidos (estado) VALUES ('entregado')")
       .run();
@@ -53,7 +53,7 @@ describe('Rutas reporte', () => {
     insertarItem.run(pendiente.lastInsertRowid, 20, 5);
     insertarItem.run(pendiente.lastInsertRowid, 5, 100);
 
-    const respuesta = await request(app).get('/producto_mas_vendido');
+    const respuesta = await request(app).get('/reporte/producto_mas_vendido');
 
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ productoMasVendido: 5 });
