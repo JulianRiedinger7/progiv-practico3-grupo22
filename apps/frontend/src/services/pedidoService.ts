@@ -20,3 +20,13 @@ export async function crearPedido(datos: {
 
   return respuesta.json();
 }
+
+export async function obtenerPedido(id: number): Promise<PedidoCreado> {
+  const respuesta = await fetch(`/api/pedidos/${id}`);
+
+  if (!respuesta.ok) {
+    throw new Error('No se pudo consultar el pedido');
+  }
+
+  return respuesta.json();
+}

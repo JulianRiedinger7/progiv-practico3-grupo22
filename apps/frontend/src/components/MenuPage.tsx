@@ -6,7 +6,7 @@ import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
-import { crearPedido, type PedidoCreado } from '../services/pedidoService';
+import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -51,6 +51,13 @@ function MenuPageContent() {
   dispatch({ type: 'clear' });
   setPedido(creado);
 }, [dispatch, items, mesa]);
+
+const actualizarEstado = useCallback(async () => {
+  if (!pedido) return;
+
+  const actualizado = await obtenerPedido(pedido.id);
+  setPedido(actualizado);
+}, [pedido]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -137,6 +144,13 @@ function MenuPageContent() {
                     {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
+                    <button
+                    type='button'
+                    className='btn btn-outline-primary mt-3'
+                    onClick={actualizarEstado}
+                  >
+                    Actualizar estado
+                  </button>
                   </div>
                 </section>
               ) : (
