@@ -5,7 +5,7 @@ export type PedidoCreado = {
 };
 
 export async function crearPedido(datos: {
-  mesa: number;
+  mesaId?: number;
   items: { productoId: number; cantidad: number }[];
 }): Promise<PedidoCreado> {
   const respuesta = await fetch('/api/pedidos', {

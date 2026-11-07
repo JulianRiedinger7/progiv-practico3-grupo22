@@ -18,7 +18,6 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
-  const [mesaInput, setMesaInput] = useState(String(mesa ?? ''));
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const { dispatch, items } = useCarrito();
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -45,13 +44,13 @@ function MenuPageContent() {
 
   const confirmarPedido = useCallback(async () => {
   const creado = await crearPedido({
-    mesa: Number(mesaInput),
+    mesaId: mesa ?? undefined,
     items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
   });
 
   dispatch({ type: 'clear' });
   setPedido(creado);
-}, [dispatch, items, mesaInput]);
+}, [dispatch, items, mesa]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -135,20 +134,14 @@ function MenuPageContent() {
                   <div className='alert alert-success mt-3 mb-0' role='status'>
                     <p className='fw-bold mb-1'>¡Pedido confirmado!</p>
                     <p className='mb-0'>Pedido N° {pedido.id}</p>
-                    <p className='mb-0'>Mesa: {Number(mesaInput)}</p>
+                    {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
                   </div>
                 </section>
               ) : (
                 <>
-                  <label htmlFor='mesa'>Mesa</label>
-                  <input
-                    id='mesa'
-                    name='mesa'
-                    value={mesaInput}
-                    onChange={(e) => setMesaInput(e.target.value)}
-                  />
+
                   <div className='mt-4'>
                     <Carrito onConfirm={confirmarPedido} pedidoConfirmado={!!pedido} />
                     {confirmado && (

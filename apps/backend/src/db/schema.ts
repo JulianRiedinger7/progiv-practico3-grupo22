@@ -20,4 +20,10 @@ export function initializeSchema(db: Database.Database): void {
       cantidad INTEGER NOT NULL
     );
   `);
+
+  const columnasPedidos = db.prepare('PRAGMA table_info(pedidos)').all() as { name: string }[];
+
+  if (!columnasPedidos.some((columna) => columna.name === 'mesa_id')) {
+    db.exec('ALTER TABLE pedidos ADD COLUMN mesa_id INTEGER');
+  }
 }
