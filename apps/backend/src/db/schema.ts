@@ -9,7 +9,8 @@ export function initializeSchema(db: Database.Database): void {
     CREATE TABLE IF NOT EXISTS pedidos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       estado TEXT NOT NULL DEFAULT 'pendiente'
-        CHECK (estado IN ('pendiente', 'entregado', 'cancelado'))
+        CHECK (estado IN ('pendiente', 'entregado', 'cancelado')),
+      mesa_id INTEGER
     );
 
     CREATE TABLE IF NOT EXISTS pedido_items (
@@ -19,4 +20,10 @@ export function initializeSchema(db: Database.Database): void {
       cantidad INTEGER NOT NULL
     );
   `);
+
+  const columnasPedidos = db.prepare('PRAGMA table_info(pedidos)').all() as { name: string }[];
+
+  if (!columnasPedidos.some((columna) => columna.name === 'mesa_id')) {
+    db.exec('ALTER TABLE pedidos ADD COLUMN mesa_id INTEGER');
+  }
 }

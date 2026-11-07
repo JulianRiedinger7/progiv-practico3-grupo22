@@ -6,7 +6,7 @@ import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
-import { crearPedido, type PedidoCreado } from '../services/pedidoService';
+import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -18,13 +18,15 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
-  const [mesaInput, setMesaInput] = useState(String(mesa ?? ''));
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const { dispatch, items } = useCarrito();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
+  const [consultando, setConsultando] = useState(false);
+  const [errorConsulta, setErrorConsulta] = useState(false);
+  const [estadoConsultado, setEstadoConsultado] = useState<string | null>(null);
   // const { dispatch } = useCarrito();
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
@@ -45,13 +47,31 @@ function MenuPageContent() {
 
   const confirmarPedido = useCallback(async () => {
   const creado = await crearPedido({
-    mesa: Number(mesaInput),
+    mesaId: mesa ?? undefined,
     items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
   });
 
   dispatch({ type: 'clear' });
   setPedido(creado);
-}, [dispatch, items, mesaInput]);
+}, [dispatch, items, mesa]);
+
+const consultarEstado = useCallback(async () => {
+  if (!pedido) return;
+
+  setConsultando(true);
+  setErrorConsulta(false);
+  setEstadoConsultado(null);
+
+  try {
+    const actualizado = await obtenerPedido(pedido.id);
+    setPedido(actualizado);
+    setEstadoConsultado(actualizado.estado);
+  } catch {
+    setErrorConsulta(true);
+  } finally {
+    setConsultando(false);
+  }
+}, [pedido]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -135,20 +155,32 @@ function MenuPageContent() {
                   <div className='alert alert-success mt-3 mb-0' role='status'>
                     <p className='fw-bold mb-1'>¡Pedido confirmado!</p>
                     <p className='mb-0'>Pedido N° {pedido.id}</p>
-                    <p className='mb-0'>Mesa: {Number(mesaInput)}</p>
+                    {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
+                    <button
+                    type='button'
+                    className='btn btn-outline-primary mt-3'
+                    onClick={consultarEstado}
+                    disabled={consultando}
+                  >
+                    {consultando ? 'Consultando...' : 'Consultar estado'}
+                  </button>
+                  {estadoConsultado && (
+                    <p className='alert alert-info mt-3 mb-0' role='status'>
+                      El estado de tu pedido es: {estadoConsultado}
+                    </p>
+                  )}
+                  {errorConsulta && (
+                    <p className='alert alert-danger mt-3 mb-0' role='alert'>
+                      No se pudo consultar el estado del pedido
+                    </p>
+                  )}
                   </div>
                 </section>
               ) : (
                 <>
-                  <label htmlFor='mesa'>Mesa</label>
-                  <input
-                    id='mesa'
-                    name='mesa'
-                    value={mesaInput}
-                    onChange={(e) => setMesaInput(e.target.value)}
-                  />
+
                   <div className='mt-4'>
                     <Carrito onConfirm={confirmarPedido} pedidoConfirmado={!!pedido} />
                     {confirmado && (
