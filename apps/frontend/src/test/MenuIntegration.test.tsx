@@ -234,7 +234,8 @@ describe('MenuPage integración con API simulada', () => {
     expect(cuerpoRecibido()).not.toHaveProperty('mesaId');
   });
 
-  it('consultar el estado del pedido', async () => {
+ 
+it('consulta el estado del pedido con GET /pedidos/:id sin recargar la página', async () => {
   const user = userEvent.setup();
   let pedidoIdConsultado: string | null = null;
 
@@ -281,10 +282,164 @@ describe('MenuPage integración con API simulada', () => {
   expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
   expect(screen.getByText(/Estado: pendiente/i)).toBeInTheDocument();
 
-  await user.click(screen.getByRole('button', { name: 'Actualizar estado' }));
+  await user.click(screen.getByRole('button', { name: 'Consultar estado' }));
 
   expect(await screen.findByText(/Estado: entregado/i)).toBeInTheDocument();
   expect(screen.getByText('Pedido N° 15')).toBeInTheDocument();
   expect(pedidoIdConsultado).toBe('15');
+});
+
+it('muestra el estado pendiente devuelto por el backend al consultar', async () => {
+  const user = userEvent.setup();
+  let pedidoIdConsultado: string | null = null;
+
+  server.use(
+    http.get('*/api/productos', () =>
+      HttpResponse.json([
+        {
+          id: 2,
+          nombre: 'Muffin de chocolate',
+          tipo: 'pasteleria',
+          variedad: 'muffin_chocolate',
+          precio: 2500,
+        },
+      ]),
+    ),
+    http.post('*/api/pedidos', () =>
+      HttpResponse.json(
+        {
+          id: 15,
+          items: [{ productoId: 2, cantidad: 1 }],
+          estado: 'pendiente',
+          total: 2500,
+        },
+        { status: 201 },
+      ),
+    ),
+    http.get('*/api/pedidos/:id', ({ params }) => {
+      pedidoIdConsultado = String(params.id);
+      return HttpResponse.json({
+        id: 15,
+        items: [{ productoId: 2, cantidad: 1 }],
+        estado: 'pendiente',
+        total: 2500,
+      });
+    }),
+  );
+
+  window.history.pushState({}, '', '/');
+  render(<MenuPage />);
+
+  await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+  await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+  await screen.findByText('Pedido N° 15');
+
+  await user.click(screen.getByRole('button', { name: 'Consultar estado' }));
+
+  expect(await screen.findByText(/Estado: pendiente/i)).toBeInTheDocument();
+  expect(screen.getByText('Pedido N° 15')).toBeInTheDocument();
+  expect(pedidoIdConsultado).toBe('15');
+});
+
+it('muestra un mensaje cuando falla la consulta del estado', async () => {
+  const user = userEvent.setup();
+
+  server.use(
+    http.get('*/api/productos', () =>
+      HttpResponse.json([
+        {
+          id: 2,
+          nombre: 'Muffin de chocolate',
+          tipo: 'pasteleria',
+          variedad: 'muffin_chocolate',
+          precio: 2500,
+        },
+      ]),
+    ),
+    http.post('*/api/pedidos', () =>
+      HttpResponse.json(
+        {
+          id: 15,
+          items: [{ productoId: 2, cantidad: 1 }],
+          estado: 'pendiente',
+          total: 2500,
+        },
+        { status: 201 },
+      ),
+    ),
+    http.get('*/api/pedidos/:id', () => HttpResponse.json({}, { status: 500 })),
+  );
+
+  window.history.pushState({}, '', '/');
+  render(<MenuPage />);
+
+  await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+  await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+  await screen.findByText('Pedido N° 15');
+
+  await user.click(screen.getByRole('button', { name: 'Consultar estado' }));
+
+  expect(
+    await screen.findByText('No se pudo consultar el estado del pedido'),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/Estado: pendiente/i)).toBeInTheDocument();
+});
+
+it('vuelve a mostrar el estado cada vez que se consulta', async () => {
+  const user = userEvent.setup();
+  let cantidadDeConsultas = 0;
+
+  server.use(
+    http.get('*/api/productos', () =>
+      HttpResponse.json([
+        {
+          id: 2,
+          nombre: 'Muffin de chocolate',
+          tipo: 'pasteleria',
+          variedad: 'muffin_chocolate',
+          precio: 2500,
+        },
+      ]),
+    ),
+    http.post('*/api/pedidos', () =>
+      HttpResponse.json(
+        {
+          id: 15,
+          items: [{ productoId: 2, cantidad: 1 }],
+          estado: 'pendiente',
+          total: 2500,
+        },
+        { status: 201 },
+      ),
+    ),
+    http.get('*/api/pedidos/:id', () => {
+      cantidadDeConsultas += 1;
+      return HttpResponse.json({
+        id: 15,
+        items: [{ productoId: 2, cantidad: 1 }],
+        estado: 'pendiente',
+        total: 2500,
+      });
+    }),
+  );
+
+  window.history.pushState({}, '', '/');
+  render(<MenuPage />);
+
+  await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+  await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+  await screen.findByText('Pedido N° 15');
+
+  await user.click(screen.getByRole('button', { name: 'Consultar estado' }));
+  expect(
+    await screen.findByText('El estado de tu pedido es: pendiente'),
+  ).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Consultar estado' }));
+
+  expect(
+    await screen.findByText('El estado de tu pedido es: pendiente'),
+  ).toBeInTheDocument();
+  expect(cantidadDeConsultas).toBe(2);
 });
 });

@@ -24,6 +24,9 @@ function MenuPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
+  const [consultando, setConsultando] = useState(false);
+  const [errorConsulta, setErrorConsulta] = useState(false);
+  const [estadoConsultado, setEstadoConsultado] = useState<string | null>(null);
   // const { dispatch } = useCarrito();
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
@@ -52,11 +55,22 @@ function MenuPageContent() {
   setPedido(creado);
 }, [dispatch, items, mesa]);
 
-const actualizarEstado = useCallback(async () => {
+const consultarEstado = useCallback(async () => {
   if (!pedido) return;
 
-  const actualizado = await obtenerPedido(pedido.id);
-  setPedido(actualizado);
+  setConsultando(true);
+  setErrorConsulta(false);
+  setEstadoConsultado(null);
+
+  try {
+    const actualizado = await obtenerPedido(pedido.id);
+    setPedido(actualizado);
+    setEstadoConsultado(actualizado.estado);
+  } catch {
+    setErrorConsulta(true);
+  } finally {
+    setConsultando(false);
+  }
 }, [pedido]);
 
   const cargarProductos = useCallback(() => {
@@ -147,10 +161,21 @@ const actualizarEstado = useCallback(async () => {
                     <button
                     type='button'
                     className='btn btn-outline-primary mt-3'
-                    onClick={actualizarEstado}
+                    onClick={consultarEstado}
+                    disabled={consultando}
                   >
-                    Actualizar estado
+                    {consultando ? 'Consultando...' : 'Consultar estado'}
                   </button>
+                  {estadoConsultado && (
+                    <p className='alert alert-info mt-3 mb-0' role='status'>
+                      El estado de tu pedido es: {estadoConsultado}
+                    </p>
+                  )}
+                  {errorConsulta && (
+                    <p className='alert alert-danger mt-3 mb-0' role='alert'>
+                      No se pudo consultar el estado del pedido
+                    </p>
+                  )}
                   </div>
                 </section>
               ) : (
