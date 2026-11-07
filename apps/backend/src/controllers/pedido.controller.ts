@@ -1,12 +1,9 @@
 import type { Request, Response } from 'express';
 import { z } from 'zod';
-import {
-  ProductoNoEncontradoError,
-  type IPedidoService,
-} from '../services/pedido.service';
+import { ProductoNoEncontradoError, type IPedidoService } from '../services/pedido.service';
 import { responderErrorInterno } from '../utils/httpErrors';
 
-const nuevoPedidoSchema = z.object({
+const nuevoPedidoSchema = z.strictObject({
   items: z
     .array(
       z.object({
@@ -20,6 +17,7 @@ const nuevoPedidoSchema = z.object({
       error: 'estado debe ser pendiente, entregado o cancelado',
     })
     .optional(),
+  mesaId: z.number({ error: 'mesaId debe ser un número' }).optional(),
 });
 
 export class PedidoController {

@@ -10,6 +10,7 @@ export interface IPedidoRepository {
 interface PedidoRow {
   id: number;
   estado: EstadoPedido;
+  mesa_id: number | null;
 }
 
 interface PedidoItemRow {
@@ -21,15 +22,15 @@ export class PedidoRepository implements IPedidoRepository {
   constructor(private readonly db: Database.Database) {}
 
   obtenerTodos(): Pedido[] {
-    const pedidos = this.db.prepare('SELECT id, estado FROM pedidos').all() as PedidoRow[];
+    const pedidos = this.db.prepare('SELECT id, estado, mesa_id FROM pedidos').all() as PedidoRow[];
 
     return pedidos.map((pedido) => this.mapearPedido(pedido));
   }
 
   obtenerPorId(id: number): Pedido | undefined {
-    const pedido = this.db.prepare('SELECT id, estado FROM pedidos WHERE id = ?').get(id) as
-      | PedidoRow
-      | undefined;
+    const pedido = this.db
+      .prepare('SELECT id, estado, mesa_id FROM pedidos WHERE id = ?')
+      .get(id) as PedidoRow | undefined;
 
     if (!pedido) return undefined;
 
@@ -37,9 +38,9 @@ export class PedidoRepository implements IPedidoRepository {
   }
 
   crear(pedido: NuevoPedido): Pedido {
-    const resultado = pedido.estado
-      ? this.db.prepare('INSERT INTO pedidos (estado) VALUES (?)').run(pedido.estado)
-      : this.db.prepare('INSERT INTO pedidos DEFAULT VALUES').run();
+    const resultado = this.db
+      .prepare('INSERT INTO pedidos (estado, mesa_id) VALUES (?, ?)')
+      .run(pedido.estado ?? 'pendiente', pedido.mesaId ?? null);
 
     const id = Number(resultado.lastInsertRowid);
     const insertarItem = this.db.prepare(
@@ -50,7 +51,7 @@ export class PedidoRepository implements IPedidoRepository {
       insertarItem.run(id, item.productoId, item.cantidad);
     });
 
-    return new Pedido(id, pedido.items, pedido.estado);
+    return new Pedido(id, pedido.items, pedido.estado, pedido.mesaId);
   }
 
   private mapearPedido(pedido: PedidoRow): Pedido {
@@ -63,6 +64,6 @@ export class PedidoRepository implements IPedidoRepository {
       cantidad: item.cantidad,
     }));
 
-    return new Pedido(pedido.id, itemsPedido, pedido.estado);
+    return new Pedido(pedido.id, itemsPedido, pedido.estado, pedido.mesa_id ?? undefined);
   }
 }

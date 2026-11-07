@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { delay, http, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
@@ -162,9 +162,81 @@ describe('MenuPage integración con API simulada', () => {
     ).toBeInTheDocument();
   });
 
-  it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
+  afterEach(() => {
+    window.history.pushState({}, '', '/');
+  });
+
+  function mockPedido() {
+    let cuerpoRecibido: unknown;
+
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 2,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            variedad: 'muffin_chocolate',
+            precio: 2500,
+          },
+        ]),
+      ),
+      http.post('*/api/pedidos', async ({ request }) => {
+        cuerpoRecibido = await request.json();
+        return HttpResponse.json(
+          {
+            id: 15,
+            items: [{ productoId: 2, cantidad: 1 }],
+            estado: 'pendiente',
+            total: 2500,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    return () => cuerpoRecibido;
+  }
+
+  it('envía mesaId cuando la URL trae ?mesa=4', async () => {
+    const cuerpoRecibido = mockPedido();
+    const user = userEvent.setup();
+
+    window.history.pushState({}, '', '/?mesa=4');
+    render(<MenuPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
+    expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
+    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
+    expect(cuerpoRecibido()).toEqual({
+      mesaId: 4,
+      items: [{ productoId: 2, cantidad: 1 }],
+    });
+  });
+
+  it('no envía mesaId cuando la URL no trae ?mesa', async () => {
+    const cuerpoRecibido = mockPedido();
+    const user = userEvent.setup();
+
+    window.history.pushState({}, '', '/');
+    render(<MenuPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
+    expect(cuerpoRecibido()).toEqual({
+      items: [{ productoId: 2, cantidad: 1 }],
+    });
+    expect(cuerpoRecibido()).not.toHaveProperty('mesaId');
+  });
+
+  it('consultar el estado del pedido', async () => {
   const user = userEvent.setup();
-  let cuerpoRecibido: unknown;
+  let pedidoIdConsultado: string | null = null;
 
   server.use(
     http.get('*/api/productos', () =>
@@ -178,27 +250,41 @@ describe('MenuPage integración con API simulada', () => {
         },
       ]),
     ),
-    http.post('*/api/pedidos', async ({ request }) => {
-      cuerpoRecibido = await request.json();
-      return HttpResponse.json(
-        { id: 15, tems:[{productoId: 2, cantidad: 1}], estado: 'pendiente', total: 2500 },
+    http.post('*/api/pedidos', () =>
+      HttpResponse.json(
+        {
+          id: 15,
+          items: [{ productoId: 2, cantidad: 1 }],
+          estado: 'pendiente',
+          total: 2500,
+        },
         { status: 201 },
-      );
+      ),
+    ),
+    http.get('*/api/pedidos/:id', ({ params }) => {
+      pedidoIdConsultado = String(params.id);
+      return HttpResponse.json({
+        id: 15,
+        items: [{ productoId: 2, cantidad: 1 }],
+        estado: 'entregado',
+        total: 2500,
+      });
     }),
   );
 
+  window.history.pushState({}, '', '/?mesa=4');
   render(<MenuPage />);
 
   await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
-  await user.type(screen.getByLabelText('Mesa'), '4');
   await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
   expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
-  expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
-  expect(screen.getByText(/2\.500/)).toBeInTheDocument();
-  expect(cuerpoRecibido).toEqual({
-    mesa: 4,
-    items: [{ productoId: 2, cantidad: 1 }],
-  });
+  expect(screen.getByText(/Estado: pendiente/i)).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Actualizar estado' }));
+
+  expect(await screen.findByText(/Estado: entregado/i)).toBeInTheDocument();
+  expect(screen.getByText('Pedido N° 15')).toBeInTheDocument();
+  expect(pedidoIdConsultado).toBe('15');
 });
 });
