@@ -22,9 +22,12 @@ export function createApp(databasePath?: string) {
   const registrarProducto = db.prepare(
     'INSERT OR IGNORE INTO productos (id) VALUES (?)',
   );
-  productoRepository
-    .obtenerTodos()
-    .forEach((producto) => registrarProducto.run(producto.id));
+  const cargarCatalogo = () => {
+    productoRepository
+      .obtenerTodos()
+      .forEach((producto) => registrarProducto.run(producto.id));
+  };
+  cargarCatalogo();
 
   const pedidoRepository = new PedidoRepository(db);
   const pedidoService = new PedidoService(pedidoRepository, productoRepository);
@@ -37,6 +40,23 @@ export function createApp(databasePath?: string) {
   app.use('/pedidos', crearPedidoRouter(pedidoController));
   app.use('/productos', crearProductoRouter(productoController));
   app.use('/reportes', crearReporteRouter(reporteController));
+
+  if (process.env.NODE_ENV === 'test') {
+    app.post('/__test__/reset', (_req, res) => {
+      db.exec(`
+        DELETE FROM pedido_items;
+        DELETE FROM pedidos;
+        DELETE FROM productos;
+        DELETE FROM sqlite_sequence WHERE name IN ('pedidos', 'pedido_items');
+      `);
+      return res.status(204).end();
+    });
+
+    app.post('/__test__/seed', (_req, res) => {
+      cargarCatalogo();
+      return res.status(204).end();
+    });
+  }
 
   return app;
 }
