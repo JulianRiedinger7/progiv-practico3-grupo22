@@ -6,7 +6,7 @@ import type { Producto } from '../schemas/producto';
 import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
-import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
+import { crearPedido, type PedidoCreado } from '../services/pedidoService';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -18,6 +18,7 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
+  const [mesaInput, setMesaInput] = useState(String(mesa ?? ''));
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const { dispatch, items } = useCarrito();
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -44,20 +45,13 @@ function MenuPageContent() {
 
   const confirmarPedido = useCallback(async () => {
   const creado = await crearPedido({
-    mesaId: mesa ?? undefined,
+    mesa: Number(mesaInput),
     items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
   });
 
   dispatch({ type: 'clear' });
   setPedido(creado);
-}, [dispatch, items, mesa]);
-
-const actualizarEstado = useCallback(async () => {
-  if (!pedido) return;
-
-  const actualizado = await obtenerPedido(pedido.id);
-  setPedido(actualizado);
-}, [pedido]);
+}, [dispatch, items, mesaInput]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -141,21 +135,20 @@ const actualizarEstado = useCallback(async () => {
                   <div className='alert alert-success mt-3 mb-0' role='status'>
                     <p className='fw-bold mb-1'>¡Pedido confirmado!</p>
                     <p className='mb-0'>Pedido N° {pedido.id}</p>
-                    {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
+                    <p className='mb-0'>Mesa: {Number(mesaInput)}</p>
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
-                    <button
-                    type='button'
-                    className='btn btn-outline-primary mt-3'
-                    onClick={actualizarEstado}
-                  >
-                    Actualizar estado
-                  </button>
                   </div>
                 </section>
               ) : (
                 <>
-
+                  <label htmlFor='mesa'>Mesa</label>
+                  <input
+                    id='mesa'
+                    name='mesa'
+                    value={mesaInput}
+                    onChange={(e) => setMesaInput(e.target.value)}
+                  />
                   <div className='mt-4'>
                     <Carrito onConfirm={confirmarPedido} pedidoConfirmado={!!pedido} />
                     {confirmado && (

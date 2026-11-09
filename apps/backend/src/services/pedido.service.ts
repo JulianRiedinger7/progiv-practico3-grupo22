@@ -18,7 +18,6 @@ export interface PedidoConTotal {
   id: number;
   items: PedidoItem[];
   estado: EstadoPedido;
-  mesaId?: number;
   total: number;
 }
 
@@ -39,7 +38,6 @@ export class PedidoService implements IPedidoService {
       id: pedido.getId(),
       items: pedido.getItems(),
       estado: pedido.getEstado(),
-      mesaId: pedido.getMesaId(),
       total: pedido.calcularTotal((id) => this.obtenerProducto(id)),
     }));
   }
@@ -53,7 +51,6 @@ export class PedidoService implements IPedidoService {
       id: pedido.getId(),
       items: pedido.getItems(),
       estado: pedido.getEstado(),
-      mesaId: pedido.getMesaId(),
       total: pedido.calcularTotal((id) => this.obtenerProducto(id)),
     };
   }
@@ -73,7 +70,6 @@ export class PedidoService implements IPedidoService {
       id: nuevo.getId(),
       items: nuevo.getItems(),
       estado: nuevo.getEstado(),
-      mesaId: nuevo.getMesaId(),
       total: nuevo.calcularTotal((id) => productos.get(id)!),
     };
   }
