@@ -277,6 +277,52 @@ describe('MenuPage integración con API simulada', () => {
     expect(screen.getByText('Cantidad: 1')).toBeInTheDocument();
   });
 
+  it('muestra un error y conserva el pedido confirmado si la respuesta al actualizar el estado no cumple el contrato', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 2,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            variedad: 'muffin_chocolate',
+            precio: 2500,
+          },
+        ]),
+      ),
+      http.post('*/api/pedidos', () =>
+        HttpResponse.json(
+          {
+            id: 15,
+            items: [{ productoId: 2, cantidad: 1 }],
+            estado: 'pendiente',
+            total: 2500,
+          },
+          { status: 201 },
+        ),
+      ),
+      http.get('*/api/pedidos/:id', () =>
+        HttpResponse.json({ id: 15, estado: 'volando', total: 'mucho' }),
+      ),
+    );
+
+    window.history.pushState({}, '', '/');
+    render(<MenuPage />);
+
+    const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+    await user.click(within(pasteleria).getByRole('button', { name: 'Agregar al pedido' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+    expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar estado' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText('Pedido N° 15')).toBeInTheDocument();
+    expect(screen.getByText(/Estado: pendiente/i)).toBeInTheDocument();
+  });
+
   it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
     const user = userEvent.setup();
     let pedidoIdConsultado: string | null = null;
