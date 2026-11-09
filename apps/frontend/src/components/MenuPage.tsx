@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import MenuHeader from './MenuHeader';
 import CafeSelector from './CafeSelector';
 import { listarProductos } from '../services/productosService';
@@ -9,15 +9,21 @@ import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
 import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
 import { formatearPrecio } from '../utils/precio';
 
+type EstadoMenu =
+  | { estado: 'cargando' }
+  | { estado: 'error'; mensaje: string }
+  | { estado: 'listo'; productos: Producto[] };
+
+const MENSAJE_ERROR_PRODUCTOS = 'No se pudieron cargar los productos';
+
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const [errorPedido, setErrorPedido] = useState<string | null>(null);
   const { dispatch, items } = useCarrito();
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [menu, setMenu] = useState<EstadoMenu>({ estado: 'cargando' });
   const [confirmado, setConfirmado] = useState(false);
+  const productos = menu.estado === 'listo' ? menu.productos : [];
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
   const agregarAlPedido = useCallback(
@@ -58,13 +64,11 @@ function MenuPageContent() {
   }, [pedido]);
 
   const cargarProductos = useCallback(() => {
-    setLoading(true);
-    setError(false);
+    setMenu({ estado: 'cargando' });
 
     listarProductos()
-      .then(setProductos)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .then((productos) => setMenu({ estado: 'listo', productos }))
+      .catch(() => setMenu({ estado: 'error', mensaje: MENSAJE_ERROR_PRODUCTOS }));
   }, []);
 
   useEffect(() => {
@@ -86,26 +90,26 @@ function MenuPageContent() {
               <>
                 <CafeSelector productos={productos} onAgregar={agregarAlPedido} />
 
-                {loading && (
+                {menu.estado === 'cargando' && (
                   <p className='alert alert-info' role='status'>
                     Cargando productos...
                   </p>
                 )}
-                {!loading && error && (
+                {menu.estado === 'error' && (
                   <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
                     <p role='alert' className='mb-0'>
-                      No se pudieron cargar los productos
+                      {menu.mensaje}
                     </p>
                     <button type='button' className='btn btn-primary' onClick={cargarProductos}>
                       Reintentar
                     </button>
                   </div>
                 )}
-                {!loading && !error && productos.length === 0 && (
+                {menu.estado === 'listo' && productos.length === 0 && (
                   <p className='alert alert-light border'>No hay productos disponibles</p>
                 )}
 
-                {!loading && !error && productosPasteleria.length > 0 && (
+                {menu.estado === 'listo' && productosPasteleria.length > 0 && (
                   <section className='mt-5' aria-labelledby='pasteleria-title'>
                     <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
                       Pastelería
