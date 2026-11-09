@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { delay, http, HttpResponse } from 'msw';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -6,6 +6,27 @@ import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
 describe('MenuPage integración con API simulada', () => {
+  it('muestra la pastelería y el precio recibido en el contrato actual de productos', async () => {
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 19,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            variedad: 'muffin_chocolate',
+            precio: 2500,
+          },
+        ]),
+      ),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByText('Pasteleria muffin chocolate')).toBeInTheDocument();
+    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
+  });
+
   it('muestra la pastelería al abrir el menú sin seleccionar opciones', async () => {
     server.use(
       http.get('*/api/productos', () =>
@@ -44,9 +65,10 @@ describe('MenuPage integración con API simulada', () => {
 
     expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
     expect(screen.queryByText('Espresso pocillo brasil')).not.toBeInTheDocument();
-    expect(screen.getByText(/3\.000/)).toBeInTheDocument();
+    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
     expect(screen.getByText(/4\.200/)).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(2);
+    const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+    expect(within(pasteleria).getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(2);
   });
 
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
@@ -162,12 +184,8 @@ describe('MenuPage integración con API simulada', () => {
     ).toBeInTheDocument();
   });
 
-  afterEach(() => {
-    window.history.pushState({}, '', '/');
-  });
-
-  function mockPedido() {
-    let cuerpoRecibido: unknown;
+  it('muestra el error de la API y conserva el carrito si rechaza el pedido', async () => {
+    const user = userEvent.setup();
 
     server.use(
       http.get('*/api/productos', () =>
@@ -176,65 +194,28 @@ describe('MenuPage integración con API simulada', () => {
             id: 2,
             nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
-            variedad: 'muffin_chocolate',
             precio: 2500,
+            variedad: 'muffin_chocolate',
           },
         ]),
       ),
-      http.post('*/api/pedidos', async ({ request }) => {
-        cuerpoRecibido = await request.json();
-        return HttpResponse.json(
-          {
-            id: 15,
-            items: [{ productoId: 2, cantidad: 1 }],
-            estado: 'pendiente',
-            total: 2500,
-          },
-          { status: 201 },
-        );
-      }),
+      http.post('*/api/pedidos', () =>
+        HttpResponse.json({ error: 'La mesa no existe' }, { status: 400 }),
+      ),
     );
 
-    return () => cuerpoRecibido;
-  }
-
-  it('envía mesaId cuando la URL trae ?mesa=4', async () => {
-    const cuerpoRecibido = mockPedido();
-    const user = userEvent.setup();
-
-    window.history.pushState({}, '', '/?mesa=4');
     render(<MenuPage />);
 
-    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+    const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+    await user.click(within(pasteleria).getByRole('button', { name: 'Agregar al pedido' }));
     await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
-    expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
-    expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
-    expect(screen.getByText(/2\.500/)).toBeInTheDocument();
-    expect(cuerpoRecibido()).toEqual({
-      mesaId: 4,
-      items: [{ productoId: 2, cantidad: 1 }],
-    });
+    expect(await screen.findByRole('alert')).toHaveTextContent('La mesa no existe');
+    expect(screen.getByText('Cantidad: 1')).toBeInTheDocument();
+    expect(screen.getAllByText('Muffin de chocolate')).toHaveLength(2);
   });
 
-  it('no envía mesaId cuando la URL no trae ?mesa', async () => {
-    const cuerpoRecibido = mockPedido();
-    const user = userEvent.setup();
-
-    window.history.pushState({}, '', '/');
-    render(<MenuPage />);
-
-    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
-    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
-
-    expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
-    expect(cuerpoRecibido()).toEqual({
-      items: [{ productoId: 2, cantidad: 1 }],
-    });
-    expect(cuerpoRecibido()).not.toHaveProperty('mesaId');
-  });
-
-  it('consultar el estado del pedido', async () => {
+  it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
   const user = userEvent.setup();
   let pedidoIdConsultado: string | null = null;
 
@@ -275,7 +256,9 @@ describe('MenuPage integración con API simulada', () => {
   window.history.pushState({}, '', '/?mesa=4');
   render(<MenuPage />);
 
-  await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+  const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+  await user.click(within(pasteleria).getByRole('button', { name: 'Agregar al pedido' }));
+  await user.type(screen.getByLabelText('Mesa'), '4');
   await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
   expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();

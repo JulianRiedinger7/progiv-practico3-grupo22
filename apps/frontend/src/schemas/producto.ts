@@ -1,4 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
+
+const variedadCafeSchema = z.object({
+  nombre: z.enum(["Brasil", "Colombia", "Etiopía"]),
+  descripcion: z.string().min(1),
+});
 
 const productoComunSchema = z.object({
   id: z.number().int().positive(),
@@ -17,11 +22,11 @@ const productoCafeSchema = productoComunSchema.extend({
 });
 
 const productoPasteleriaSchema = productoComunSchema.extend({
-  tipo: z.literal('pasteleria'),
-  variedad: z.enum(['muffin_chocolate', 'torta_selva_negra']),
+  tipo: z.literal("pasteleria"),
+  variedad: z.enum(["muffin_chocolate", "torta_selva_negra"]),
 });
 
-export const productoSchema = z.discriminatedUnion('tipo', [
+export const productoSchema = z.discriminatedUnion("tipo", [
   productoCafeSchema,
   productoPasteleriaSchema,
 ]);

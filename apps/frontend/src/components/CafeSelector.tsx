@@ -23,10 +23,10 @@ const tamanosCafe: { valor: Cafe['tamanio']; etiqueta: string }[] = [
   { valor: 'taza_grande', etiqueta: 'Taza grande' },
 ];
 
-const variedadesCafe: { valor: VariedadCafe; etiqueta: string }[] = [
-  { valor: 'brasil', etiqueta: 'Brasil' },
-  { valor: 'colombia', etiqueta: 'Colombia' },
-  { valor: 'etiopia', etiqueta: 'Etiopía' },
+const variedadesCafe: { valor: Cafe['variedad']['nombre']; etiqueta: string }[] = [
+  { valor: 'Brasil', etiqueta: 'Brasil' },
+  { valor: 'Colombia', etiqueta: 'Colombia' },
+  { valor: 'Etiopía', etiqueta: 'Etiopía' },
 ];
 
 type CafeSelectorProps = {
@@ -36,8 +36,10 @@ type CafeSelectorProps = {
 
 export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
-  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamanio'] | null>(null);
-  const [variedadSeleccionada, setVariedadSeleccionada] = useState<VariedadCafe | null>(null);
+  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
+  const [variedadSeleccionada, setVariedadSeleccionada] = useState<
+    Cafe['variedad']['nombre'] | null
+  >(null);
   const cafeSeleccionado =
     tipoSeleccionado && tamanoSeleccionado && variedadSeleccionada
       ? buscarCafe(productos, {
@@ -107,17 +109,34 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                 Elegí la variedad
               </h4>
               <div className='d-flex flex-wrap gap-2' role='group' aria-label='Variedad del café'>
-                {variedadesCafe.map(({ valor, etiqueta }) => (
-                  <button
-                    key={valor}
-                    type='button'
-                    className={`btn btn-outline-primary rounded-pill px-4 ${variedadSeleccionada === valor ? 'active' : ''}`}
-                    aria-pressed={variedadSeleccionada === valor}
-                    onClick={() => setVariedadSeleccionada(valor)}
-                  >
-                    {etiqueta}
-                  </button>
-                ))}
+                {variedadesCafe.map(({ valor, etiqueta }) => {
+                  const producto = buscarCafe(productos, {
+                    tipo: tipoSeleccionado,
+                    tamano: tamanoSeleccionado,
+                    variedad: valor,
+                  });
+
+                  return (
+                    <div className='d-flex flex-column align-items-start gap-1' key={valor}>
+                      <button
+                        type='button'
+                        className={`btn btn-outline-primary rounded-pill px-4 ${variedadSeleccionada === valor ? 'active' : ''}`}
+                        aria-pressed={variedadSeleccionada === valor}
+                        onClick={() => setVariedadSeleccionada(valor)}
+                      >
+                        {etiqueta}
+                      </button>
+                      {producto && (
+                        <div>
+                          <p className='small mb-0'>{producto.variedad.descripcion}</p>
+                          <p className='small fw-semibold mb-0'>
+                            {formatoPrecio.format(producto.precio)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -135,11 +154,15 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
               <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
                 {cafeSeleccionado.nombre}
               </h4>
+            </div>
               <p className='text-secondary mb-2'>{cafeSeleccionado.variedad.descripcion}</p>
               <button
                 type='button'
                 className='btn btn-primary'
-                onClick={() => onAgregar(cafeSeleccionado)}
+                disabled={!cafeSeleccionado}
+                onClick={() => {
+                  if (cafeSeleccionado) onAgregar(cafeSeleccionado);
+                }}
               >
                 Agregar al pedido
               </button>
@@ -150,6 +173,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
           </div>
         </article>
       )}
+      
     </div>
   );
 }

@@ -47,7 +47,7 @@ describe('buscarCafe', () => {
       buscarCafe(productos, {
         tipo: 'expreso',
         tamanio: 'mediano',
-        variedad: 'colombia',
+        variedad: 'Colombia',
       }),
     ).toMatchObject({ id: 5, precio: 7360 });
   });

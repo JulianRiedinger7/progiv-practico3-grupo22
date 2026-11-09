@@ -1,11 +1,11 @@
 import type { Producto } from '../schemas/producto';
 
-type ProductoCafe = Extract<Producto, { tipo: 'expreso' | 'filtrado' }>;
+type Cafe = Exclude<Producto, { tipo: "pasteleria" }>;
 
 type CaracteristicasCafe = {
-  tipo: string;
-  tamanio: string;
-  variedad: string;
+  tipo: Cafe["tipo"];
+  tamanio: Cafe["tamano"];
+  variedad: Cafe["variedad"]["nombre"];
 };
 
 function normalizar(valor: string): string {
@@ -18,8 +18,8 @@ function normalizar(valor: string): string {
 export function buscarCafe(
   productos: Producto[],
   caracteristicas: CaracteristicasCafe,
-): ProductoCafe | undefined {
-  return productos.find((p): p is ProductoCafe => {
+): Cafe | undefined {
+  return productos.find((p): p is Cafe => {
     if (p.tipo === 'pasteleria') return false;
 
     return (

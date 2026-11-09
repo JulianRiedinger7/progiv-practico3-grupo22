@@ -19,6 +19,7 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
+  const [errorPedido, setErrorPedido] = useState<string | null>(null);
   const { dispatch, items } = useCarrito();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,21 +44,21 @@ function MenuPageContent() {
   );
 
   const confirmarPedido = useCallback(async () => {
-  const creado = await crearPedido({
-    mesaId: mesa ?? undefined,
-    items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
-  });
+  setErrorPedido(null);
+  try {
+    const creado = await crearPedido({
+      mesa: Number(mesaInput),
+      items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
+    });
 
-  dispatch({ type: 'clear' });
-  setPedido(creado);
-}, [dispatch, items, mesa]);
-
-const actualizarEstado = useCallback(async () => {
-  if (!pedido) return;
-
-  const actualizado = await obtenerPedido(pedido.id);
-  setPedido(actualizado);
-}, [pedido]);
+    dispatch({ type: 'clear' });
+    setPedido(creado);
+  } catch (error: unknown) {
+    setErrorPedido(
+      error instanceof Error ? error.message : 'No se pudo confirmar el pedido',
+    );
+  }
+}, [dispatch, items, mesaInput]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -157,6 +158,11 @@ const actualizarEstado = useCallback(async () => {
                 <>
 
                   <div className='mt-4'>
+                    {errorPedido && (
+                      <p className='alert alert-danger' role='alert'>
+                        {errorPedido}
+                      </p>
+                    )}
                     <Carrito onConfirm={confirmarPedido} pedidoConfirmado={!!pedido} />
                     {confirmado && (
                       <p className='alert alert-success mt-3 mb-0' role='status'>
