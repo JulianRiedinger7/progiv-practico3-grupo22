@@ -1,12 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import type { Producto } from '../schemas/producto';
 import { buscarCafe } from '../utils/buscarCafe';
-
-const formatoPrecio = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-});
+import { formatearPrecio } from '../utils/precio';
 
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
@@ -128,7 +123,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                         <div>
                           <p className='small mb-0'>{producto.variedad.descripcion}</p>
                           <p className='small fw-semibold mb-0'>
-                            {formatoPrecio.format(producto.precio)}
+                            {formatearPrecio(producto.precio)}
                           </p>
                         </div>
                       )}

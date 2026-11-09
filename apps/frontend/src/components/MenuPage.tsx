@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import MenuHeader from './MenuHeader';
 import CafeSelector from './CafeSelector';
 import { listarProductos } from '../services/productosService';
@@ -7,12 +7,7 @@ import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
 import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
-
-const formatoPrecio = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-});
+import { formatearPrecio } from '../utils/precio';
 
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
@@ -122,7 +117,7 @@ function MenuPageContent() {
                             <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
                               <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
                               <p className='card-text h5 fw-bold text-primary mb-0'>
-                                {formatoPrecio.format(producto.precio)}
+                                {formatearPrecio(producto.precio)}
                               </p>
                               <button
                                 type='button'
@@ -148,7 +143,7 @@ function MenuPageContent() {
                     <p className='mb-0'>Pedido N° {pedido.id}</p>
                     {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
                     <p className='mb-0'>Estado: {pedido.estado}</p>
-                    <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
+                    <p className='mb-0'>Total: {formatearPrecio(pedido.total)}</p>
                     <button
                       type='button'
                       className='btn btn-outline-primary mt-3'
