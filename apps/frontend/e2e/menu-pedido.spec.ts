@@ -1,5 +1,15 @@
 import { expect, test } from '@playwright/test';
 
+const apiURL = process.env.E2E_API_URL ?? 'http://127.0.0.1:3000';
+
+test.beforeEach(async ({ request }) => {
+  const reset = await request.post(`${apiURL}/__test__/reset`);
+  expect(reset.ok()).toBeTruthy();
+
+  const seed = await request.post(`${apiURL}/__test__/seed`);
+  expect(seed.ok()).toBeTruthy();
+});
+
 test('recorrido completo: elegir café, agregar pastelería, confirmar y seguir el pedido', async ({
   page,
 }) => {
@@ -30,7 +40,7 @@ test('recorrido completo: elegir café, agregar pastelería, confirmar y seguir 
   await page.getByRole('button', { name: 'Confirmar pedido' }).click();
 
   await expect(page.getByText('¡Pedido confirmado!')).toBeVisible();
-  await expect(page.getByText(/Pedido N° \d+/)).toBeVisible();
+  await expect(page.getByText('Pedido N° 1')).toBeVisible();
   await expect(page.getByText('Mesa: 4')).toBeVisible();
   await expect(page.getByText('Estado: pendiente')).toBeVisible();
   await expect(page.getByText(/Total:.*7\.520/)).toBeVisible();

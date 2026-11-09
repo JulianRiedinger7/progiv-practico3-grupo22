@@ -8,7 +8,8 @@ const webURL = process.env.E2E_WEB_URL ?? "http://127.0.0.1:5173";
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
   reporter: "list",
   use: {
     baseURL: webURL,
@@ -25,6 +26,7 @@ export default defineConfig({
             url: `${apiURL}/productos`,
             reuseExistingServer: false,
             env: {
+              NODE_ENV: "test",
               SQLITE_DATABASE_PATH: ":memory:",
             },
           },
