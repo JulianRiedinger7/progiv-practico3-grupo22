@@ -11,8 +11,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 5,
         tipo: "expreso",
         nombre: "Espresso Mediano Colombia",
-        precioBase: 2500,
-        tamano: "mediano",
+        tamanio: "mediano",
         gramosCafe: 27,
         variedad: {
           nombre: "Colombia",
@@ -34,8 +33,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 5,
         tipo: "expreso",
         nombre: "Espresso Mediano Colombia",
-        precioBase: 2500,
-        tamano: "mediano",
+        tamanio: "mediano",
         gramosCafe: 27,
         variedad: {
           nombre: "Colombia",
@@ -64,8 +62,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 10,
         tipo: "filtrado",
         nombre: "Filtrado Pocillo Brasil",
-        precioBase: 3200,
-        tamano: "pocillo",
+        tamanio: "pocillo",
         gramosCafe: 6,
         variedad: {
           nombre: "Brasil",
@@ -93,8 +90,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 1,
         tipo: "expreso",
         nombre: "Espresso Mediano Brasil",
-        precioBase: 2500,
-        tamano: "mediano",
+        tamanio: "mediano",
         gramosCafe: 27,
         variedad: {
           nombre: "Brasil",
@@ -106,8 +102,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 2,
         tipo: "expreso",
         nombre: "Espresso Mediano Colombia",
-        precioBase: 2500,
-        tamano: "mediano",
+        tamanio: "mediano",
         gramosCafe: 27,
         variedad: {
           nombre: "Colombia",
@@ -119,8 +114,7 @@ describe("CafeSelector con el contrato actual de productos", () => {
         id: 3,
         tipo: "expreso",
         nombre: "Espresso Mediano Etiopía",
-        precioBase: 2500,
-        tamano: "mediano",
+        tamanio: "mediano",
         gramosCafe: 27,
         variedad: {
           nombre: "Etiopía",
