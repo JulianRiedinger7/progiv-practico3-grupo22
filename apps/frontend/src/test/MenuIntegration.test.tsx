@@ -189,6 +189,36 @@ describe('MenuPage integración con API simulada', () => {
     ).toBeInTheDocument();
   });
 
+  it('muestra el error de la API y conserva el carrito si rechaza el pedido', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 2,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            precio: 2500,
+            variedad: 'muffin_chocolate',
+          },
+        ]),
+      ),
+      http.post('*/api/pedidos', () =>
+        HttpResponse.json({ error: 'La mesa no existe' }, { status: 400 }),
+      ),
+    );
+
+    render(<MenuPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('La mesa no existe');
+    expect(screen.getByText('Cantidad: 1')).toBeInTheDocument();
+    expect(screen.getByText('Muffin de chocolate')).toBeInTheDocument();
+  });
+
   it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
   const user = userEvent.setup();
   let cuerpoRecibido: unknown;
@@ -231,3 +261,4 @@ describe('MenuPage integración con API simulada', () => {
   });
 });
 });
+
