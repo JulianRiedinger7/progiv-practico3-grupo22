@@ -1,11 +1,11 @@
 export type PedidoCreado = {
-  numeroPedido: number;
+  id: number;
   estado: string;
   total: number;
 };
 
 export async function crearPedido(datos: {
-  mesa: number;
+  mesaId?: number;
   items: { productoId: number; cantidad: number }[];
 }): Promise<PedidoCreado> {
   const respuesta = await fetch('/api/pedidos', {
@@ -25,6 +25,16 @@ export async function crearPedido(datos: {
         : `La API rechazó el pedido (${respuesta.status})`;
 
     throw new Error(mensaje);
+  }
+
+  return respuesta.json();
+}
+
+export async function obtenerPedido(id: number): Promise<PedidoCreado> {
+  const respuesta = await fetch(`/api/pedidos/${id}`);
+
+  if (!respuesta.ok) {
+    throw new Error('No se pudo consultar el pedido');
   }
 
   return respuesta.json();

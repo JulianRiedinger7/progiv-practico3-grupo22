@@ -10,12 +10,14 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
+type VariedadCafe = 'brasil' | 'colombia' | 'etiopia';
+
 const tiposCafe: { valor: Cafe['tipo']; etiqueta: string }[] = [
   { valor: 'expreso', etiqueta: 'Expreso' },
   { valor: 'filtrado', etiqueta: 'Filtrado' },
 ];
 
-const tamanosCafe: { valor: Cafe['tamano']; etiqueta: string }[] = [
+const tamanosCafe: { valor: Cafe['tamanio']; etiqueta: string }[] = [
   { valor: 'pocillo', etiqueta: 'Pocillo' },
   { valor: 'mediano', etiqueta: 'Mediano' },
   { valor: 'taza_grande', etiqueta: 'Taza grande' },
@@ -42,7 +44,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
     tipoSeleccionado && tamanoSeleccionado && variedadSeleccionada
       ? buscarCafe(productos, {
           tipo: tipoSeleccionado,
-          tamano: tamanoSeleccionado,
+          tamanio: tamanoSeleccionado,
           variedad: variedadSeleccionada,
         })
       : undefined;
@@ -153,19 +155,25 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                 {cafeSeleccionado.nombre}
               </h4>
             </div>
+              <p className='text-secondary mb-2'>{cafeSeleccionado.variedad.descripcion}</p>
+              <button
+                type='button'
+                className='btn btn-primary'
+                disabled={!cafeSeleccionado}
+                onClick={() => {
+                  if (cafeSeleccionado) onAgregar(cafeSeleccionado);
+                }}
+              >
+                Agregar al pedido
+              </button>
+            </div>
+            <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
+              {formatoPrecio.format(cafeSeleccionado.precio)}
+            </p>
           </div>
         </article>
       )}
-      <button
-        type='button'
-        className='btn btn-primary'
-        disabled={!cafeSeleccionado}
-        onClick={() => {
-          if (cafeSeleccionado) onAgregar(cafeSeleccionado);
-        }}
-      >
-        Agregar al pedido
-      </button>
+      
     </div>
   );
 }

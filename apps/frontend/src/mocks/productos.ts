@@ -4,14 +4,13 @@ export const productoEspressoMock: Producto = {
   id: 1,
   nombre: 'Espresso pocillo brasil',
   tipo: 'expreso',
-  precioBase: 2500,
-  precio: 5020,
-  tamano: 'pocillo',
+  tamanio: 'pocillo',
+  gramosCafe: 18,
   variedad: {
     nombre: 'Brasil',
     descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
   },
-  gramosCafe: 18,
+  precio: 5020,
 };
 
 export const productosMock: Producto[] = [
@@ -20,16 +19,14 @@ export const productosMock: Producto[] = [
     id: 2,
     nombre: 'Muffin de chocolate',
     tipo: 'pasteleria',
-    precioBase: 2500,
-    precio: 2500,
     variedad: 'muffin_chocolate',
+    precio: 2500,
   },
   {
     id: 3,
     nombre: 'Torta selva negra',
     tipo: 'pasteleria',
-    precioBase: 4200,
-    precio: 4200,
     variedad: 'torta_selva_negra',
+    precio: 4200,
   },
 ];

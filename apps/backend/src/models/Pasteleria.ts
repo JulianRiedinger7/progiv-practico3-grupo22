@@ -16,7 +16,21 @@ export class Pasteleria extends Producto {
     super(id, `Pasteleria ${nombreVariedad}`, precioBase);
   }
 
+  getTipo(): 'pasteleria' {
+    return 'pasteleria';
+  }
+
   calcularPrecio(): number {
     return this.precioBase;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      nombre: this.nombre,
+      tipo: this.getTipo(),
+      variedad: this.variedad,
+      precio: this.calcularPrecio(),
+    };
   }
 }

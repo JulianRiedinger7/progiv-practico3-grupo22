@@ -8,15 +8,17 @@ const variedadCafeSchema = z.object({
 const productoComunSchema = z.object({
   id: z.number().int().positive(),
   nombre: z.string().min(1),
-  precioBase: z.number().nonnegative(),
   precio: z.number().nonnegative(),
 });
 
 const productoCafeSchema = productoComunSchema.extend({
-  tipo: z.enum(["expreso", "filtrado"]),
-  tamano: z.enum(["pocillo", "mediano", "taza_grande"]),
+  tipo: z.enum(['expreso', 'filtrado']),
+  tamanio: z.enum(['pocillo', 'mediano', 'taza_grande']),
   gramosCafe: z.number().positive(),
-  variedad: variedadCafeSchema,
+  variedad: z.object({
+    nombre: z.string().min(1),
+    descripcion: z.string().min(1),
+  }),
 });
 
 const productoPasteleriaSchema = productoComunSchema.extend({

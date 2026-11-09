@@ -73,4 +73,46 @@ describe('Rutas de pedidos', () => {
       ],
     });
   });
+
+  it('POST /pedidos crea un pedido y calcula su total', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 1, cantidad: 1 }] });
+
+    expect(respuesta.status).toBe(201);
+    expect(respuesta.body).toEqual({
+      id: expect.any(Number),
+      items: [{ productoId: 1, cantidad: 1 }],
+      estado: 'pendiente',
+      total: 5020,
+    });
+  });
+
+  it('POST /pedidos rechaza un producto inexistente sin guardar el pedido', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 999, cantidad: 1 }] });
+
+    expect(respuesta.status).toBe(400);
+    expect(respuesta.body).toEqual({ error: 'Producto no encontrado' });
+
+    const resultado = app.locals.db.prepare('SELECT COUNT(*) AS cantidad FROM pedidos').get() as {
+      cantidad: number;
+    };
+    expect(resultado.cantidad).toBe(0);
+  });
+
+  it('POST /pedidos acepta mesaId opcional', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 1, cantidad: 1 }], mesaId: 5 });
+    expect(respuesta.status).toBe(201);
+    expect(respuesta.body).toEqual({
+      id: expect.any(Number),
+      items: [{ productoId: 1, cantidad: 1 }],
+      estado: 'pendiente',
+      mesaId: 5,
+      total: 5020,
+    });
+  });
 });

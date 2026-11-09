@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { delay, http, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import MenuPage from '../components/MenuPage';
 import { server } from './mocks/server';
 
@@ -12,9 +12,8 @@ describe('MenuPage integración con API simulada', () => {
         HttpResponse.json([
           {
             id: 19,
-            nombre: 'Pasteleria muffin chocolate',
+            nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
-            precioBase: 2500,
             variedad: 'muffin_chocolate',
             precio: 2500,
           },
@@ -36,30 +35,27 @@ describe('MenuPage integración con API simulada', () => {
             id: 1,
             nombre: 'Espresso pocillo brasil',
             tipo: 'expreso',
-            precioBase: 2500,
-            precio: 5020,
-            tamano: 'pocillo',
+            tamanio: 'pocillo',
+            gramosCafe: 18,
             variedad: {
               nombre: 'Brasil',
               descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
             },
-            gramosCafe: 18,
+            precio: 5020,
           },
           {
             id: 2,
             nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
-            precioBase: 2500,
-            precio: 2500,
             variedad: 'muffin_chocolate',
+            precio: 3000,
           },
           {
             id: 3,
             nombre: 'Pasteleria torta selva_negra',
             tipo: 'pasteleria',
-            precioBase: 4200,
-            precio: 4200,
             variedad: 'torta_selva_negra',
+            precio: 4200,
           },
         ]),
       ),
@@ -157,14 +153,13 @@ describe('MenuPage integración con API simulada', () => {
             id: 1,
             nombre: 'Espresso pocillo brasil',
             tipo: 'expreso',
-            precioBase: 2500,
-            precio: 5020,
-            tamano: 'pocillo',
+            tamanio: 'pocillo',
+            gramosCafe: 18,
             variedad: {
               nombre: 'Brasil',
               descripcion: 'Acidez baja, cuerpo denso y notas de avellana',
             },
-            gramosCafe: 18,
+            precio: 5020,
           },
         ]);
       }),
@@ -199,7 +194,6 @@ describe('MenuPage integración con API simulada', () => {
             id: 2,
             nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
-            precioBase: 2500,
             precio: 2500,
             variedad: 'muffin_chocolate',
           },
@@ -223,7 +217,7 @@ describe('MenuPage integración con API simulada', () => {
 
   it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
   const user = userEvent.setup();
-  let cuerpoRecibido: unknown;
+  let pedidoIdConsultado: string | null = null;
 
   server.use(
     http.get('*/api/productos', () =>
@@ -232,21 +226,34 @@ describe('MenuPage integración con API simulada', () => {
           id: 2,
           nombre: 'Muffin de chocolate',
           tipo: 'pasteleria',
-          precioBase: 2500,
-          precio: 2500,
           variedad: 'muffin_chocolate',
+          precio: 2500,
         },
       ]),
     ),
-    http.post('*/api/pedidos', async ({ request }) => {
-      cuerpoRecibido = await request.json();
-      return HttpResponse.json(
-        { numeroPedido: 15, estado: 'pendiente', total: 2500 },
+    http.post('*/api/pedidos', () =>
+      HttpResponse.json(
+        {
+          id: 15,
+          items: [{ productoId: 2, cantidad: 1 }],
+          estado: 'pendiente',
+          total: 2500,
+        },
         { status: 201 },
-      );
+      ),
+    ),
+    http.get('*/api/pedidos/:id', ({ params }) => {
+      pedidoIdConsultado = String(params.id);
+      return HttpResponse.json({
+        id: 15,
+        items: [{ productoId: 2, cantidad: 1 }],
+        estado: 'entregado',
+        total: 2500,
+      });
     }),
   );
 
+  window.history.pushState({}, '', '/?mesa=4');
   render(<MenuPage />);
 
   const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
@@ -254,12 +261,13 @@ describe('MenuPage integración con API simulada', () => {
   await user.type(screen.getByLabelText('Mesa'), '4');
   await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
-  expect(await screen.findByText(/15/)).toBeInTheDocument();
-  expect(screen.getByText(/pendiente/i)).toBeInTheDocument();
-  expect(screen.getByText(/2\.500/)).toBeInTheDocument();
-  expect(cuerpoRecibido).toEqual({
-    mesa: 4,
-    items: [{ productoId: 2, cantidad: 1 }],
-  });
+  expect(await screen.findByText('Pedido N° 15')).toBeInTheDocument();
+  expect(screen.getByText(/Estado: pendiente/i)).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Actualizar estado' }));
+
+  expect(await screen.findByText(/Estado: entregado/i)).toBeInTheDocument();
+  expect(screen.getByText('Pedido N° 15')).toBeInTheDocument();
+  expect(pedidoIdConsultado).toBe('15');
 });
 });

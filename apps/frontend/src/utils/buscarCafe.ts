@@ -4,9 +4,16 @@ type Cafe = Exclude<Producto, { tipo: "pasteleria" }>;
 
 type CaracteristicasCafe = {
   tipo: Cafe["tipo"];
-  tamano: Cafe["tamano"];
+  tamanio: Cafe["tamano"];
   variedad: Cafe["variedad"]["nombre"];
 };
+
+function normalizar(valor: string): string {
+  return valor
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
 
 export function buscarCafe(
   productos: Producto[],
@@ -17,8 +24,8 @@ export function buscarCafe(
 
     return (
       p.tipo === caracteristicas.tipo &&
-      p.tamano === caracteristicas.tamano &&
-      p.variedad.nombre === caracteristicas.variedad
+      p.tamanio === caracteristicas.tamanio &&
+      normalizar(p.variedad.nombre) === normalizar(caracteristicas.variedad)
     );
   });
 }

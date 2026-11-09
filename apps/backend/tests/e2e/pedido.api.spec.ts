@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('API de pedidos', () => {
-  test('GET /pedidos devuelve una lista vacía', async ({ request }) => {
+  test('GET /pedidos devuelve una lista', async ({ request }) => {
     const respuesta = await request.get('/pedidos');
 
     expect(respuesta.status()).toBe(200);
-    expect(await respuesta.json()).toEqual([]);
+    expect(Array.isArray(await respuesta.json())).toBe(true);
   });
 
   test('GET /pedidos/:id devuelve 404 si no existe', async ({ request }) => {
@@ -30,5 +30,25 @@ test.describe('API de pedidos', () => {
         },
       ],
     });
+  });
+
+  test('POST crea un pedido que puede consultarse por ID', async ({ request }) => {
+    const respuestaCrear = await request.post('/pedidos', {
+      data: { items: [{ productoId: 1, cantidad: 2 }] },
+    });
+
+    expect(respuestaCrear.status()).toBe(201);
+    const pedidoCreado = await respuestaCrear.json();
+    expect(pedidoCreado).toMatchObject({
+      id: expect.any(Number),
+      items: [{ productoId: 1, cantidad: 2 }],
+      estado: 'pendiente',
+      total: 10040,
+    });
+
+    const respuestaConsultar = await request.get(`/pedidos/${pedidoCreado.id}`);
+
+    expect(respuestaConsultar.status()).toBe(200);
+    expect(await respuestaConsultar.json()).toEqual(pedidoCreado);
   });
 });

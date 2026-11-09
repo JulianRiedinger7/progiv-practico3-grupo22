@@ -1,5 +1,23 @@
 import { Producto } from "./Producto";
 
+const informacionVariedades: Record<
+  string,
+  { nombre: string; descripcion: string }
+> = {
+  brasil: {
+    nombre: "Brasil",
+    descripcion: "Acidez baja, cuerpo denso y notas de avellana",
+  },
+  colombia: {
+    nombre: "Colombia",
+    descripcion: "Acidez media, cuerpo equilibrado y notas cítricas y florales",
+  },
+  etiopia: {
+    nombre: "Etiopía",
+    descripcion: "Acidez muy viva, cuerpo ligero y notas frutales",
+  },
+};
+
 export abstract class Cafe extends Producto {
   private readonly precioPorGramo: Record<string, number> = {
     brasil: 140,
@@ -18,6 +36,10 @@ export abstract class Cafe extends Producto {
     super(id, `${nombre} ${tamano} ${variedad}`, precioBase);
   }
 
+  getGramos(): number {
+    return this.gramosPorTamano[this.tamano];
+  }
+
   calcularPrecio(): number {
     const gramos = this.gramosPorTamano[this.tamano];
     const precioPorGramo = this.precioPorGramo[this.variedad];
@@ -33,5 +55,24 @@ export abstract class Cafe extends Producto {
     return (
       gramos * precioPorGramo + this.precioBase
     );
+  }
+
+  toJSON() {
+    const informacionVariedad = informacionVariedades[this.variedad];
+    const tipo = this.getTipo();
+
+    if (!informacionVariedad) {
+      throw new Error(`Variedad de café no soportada: ${this.variedad}`);
+    }
+
+    return {
+      id: this.id,
+      nombre: this.nombre,
+      tipo: tipo === "espresso" ? "expreso" : tipo,
+      tamanio: this.tamano,
+      gramosCafe: this.getGramos(),
+      variedad: informacionVariedad,
+      precio: this.calcularPrecio(),
+    };
   }
 }
