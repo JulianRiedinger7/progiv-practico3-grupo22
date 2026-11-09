@@ -7,25 +7,24 @@ import { leerMesaDesdeUrl } from '../utils/mesa';
 import { Carrito } from '../carrito/carrito';
 import { CarritoProvider, useCarrito } from '../carrito/carritoContext';
 import { crearPedido, obtenerPedido, type PedidoCreado } from '../services/pedidoService';
+import { formatearPrecio } from '../utils/precio';
 
-const formatoPrecio = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-});
+type EstadoMenu =
+  | { estado: 'cargando' }
+  | { estado: 'error'; mensaje: string }
+  | { estado: 'listo'; productos: Producto[] };
 
-
+const MENSAJE_ERROR_PRODUCTOS = 'No se pudieron cargar los productos';
 
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const [errorPedido, setErrorPedido] = useState<string | null>(null);
+  const [errorEstado, setErrorEstado] = useState<string | null>(null);
   const { dispatch, items } = useCarrito();
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [menu, setMenu] = useState<EstadoMenu>({ estado: 'cargando' });
   const [confirmado, setConfirmado] = useState(false);
-  // const { dispatch } = useCarrito();
+  const productos = menu.estado === 'listo' ? menu.productos : [];
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
   const agregarAlPedido = useCallback(
@@ -44,30 +43,40 @@ function MenuPageContent() {
   );
 
   const confirmarPedido = useCallback(async () => {
-  setErrorPedido(null);
-  try {
-    const creado = await crearPedido({
-      mesa: Number(mesaInput),
-      items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
-    });
+    setErrorPedido(null);
+    try {
+      const creado = await crearPedido({
+        ...(mesa !== null ? { mesaId: mesa } : {}),
+        items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
+      });
 
-    dispatch({ type: 'clear' });
-    setPedido(creado);
-  } catch (error: unknown) {
-    setErrorPedido(
-      error instanceof Error ? error.message : 'No se pudo confirmar el pedido',
-    );
-  }
-}, [dispatch, items, mesaInput]);
+      dispatch({ type: 'clear' });
+      setPedido(creado);
+    } catch (error: unknown) {
+      setErrorPedido(error instanceof Error ? error.message : 'No se pudo confirmar el pedido');
+    }
+  }, [dispatch, items, mesa]);
+
+  const actualizarEstado = useCallback(async () => {
+    if (!pedido) return;
+
+    setErrorEstado(null);
+    try {
+      const actualizado = await obtenerPedido(pedido.id);
+      setPedido(actualizado);
+    } catch (error: unknown) {
+      setErrorEstado(
+        error instanceof Error ? error.message : 'No se pudo actualizar el estado del pedido',
+      );
+    }
+  }, [pedido]);
 
   const cargarProductos = useCallback(() => {
-    setLoading(true);
-    setError(false);
+    setMenu({ estado: 'cargando' });
 
     listarProductos()
-      .then(setProductos)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .then((productos) => setMenu({ estado: 'listo', productos }))
+      .catch(() => setMenu({ estado: 'error', mensaje: MENSAJE_ERROR_PRODUCTOS }));
   }, []);
 
   useEffect(() => {
@@ -89,24 +98,26 @@ function MenuPageContent() {
               <>
                 <CafeSelector productos={productos} onAgregar={agregarAlPedido} />
 
-                {loading && (
+                {menu.estado === 'cargando' && (
                   <p className='alert alert-info' role='status'>
                     Cargando productos...
                   </p>
                 )}
-                {!loading && error && (
+                {menu.estado === 'error' && (
                   <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
-                    <p role='alert' className='mb-0'>No se pudieron cargar los productos</p>
+                    <p role='alert' className='mb-0'>
+                      {menu.mensaje}
+                    </p>
                     <button type='button' className='btn btn-primary' onClick={cargarProductos}>
                       Reintentar
                     </button>
                   </div>
                 )}
-                {!loading && !error && productos.length === 0 && (
+                {menu.estado === 'listo' && productos.length === 0 && (
                   <p className='alert alert-light border'>No hay productos disponibles</p>
                 )}
 
-                {!loading && !error && productosPasteleria.length > 0 && (
+                {menu.estado === 'listo' && productosPasteleria.length > 0 && (
                   <section className='mt-5' aria-labelledby='pasteleria-title'>
                     <h3 id='pasteleria-title' className='h4 text-primary border-bottom pb-2 mb-3'>
                       Pastelería
@@ -118,7 +129,7 @@ function MenuPageContent() {
                             <div className='card-body p-4 d-flex flex-column justify-content-between gap-4'>
                               <h4 className='card-title h5 fw-semibold mb-0'>{producto.nombre}</h4>
                               <p className='card-text h5 fw-bold text-primary mb-0'>
-                                {formatoPrecio.format(producto.precio)}
+                                {formatearPrecio(producto.precio)}
                               </p>
                               <button
                                 type='button'
@@ -144,19 +155,23 @@ function MenuPageContent() {
                     <p className='mb-0'>Pedido N° {pedido.id}</p>
                     {mesa !== null && <p className='mb-0'>Mesa: {mesa}</p>}
                     <p className='mb-0'>Estado: {pedido.estado}</p>
-                    <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
+                    <p className='mb-0'>Total: {formatearPrecio(pedido.total)}</p>
                     <button
-                    type='button'
-                    className='btn btn-outline-primary mt-3'
-                    onClick={actualizarEstado}
-                  >
-                    Actualizar estado
-                  </button>
+                      type='button'
+                      className='btn btn-outline-primary mt-3'
+                      onClick={actualizarEstado}
+                    >
+                      Actualizar estado
+                    </button>
+                    {errorEstado && (
+                      <p className='alert alert-danger mt-3 mb-0' role='alert'>
+                        {errorEstado}
+                      </p>
+                    )}
                   </div>
                 </section>
               ) : (
                 <>
-
                   <div className='mt-4'>
                     {errorPedido && (
                       <p className='alert alert-danger' role='alert'>

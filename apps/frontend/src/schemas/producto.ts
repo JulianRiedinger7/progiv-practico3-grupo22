@@ -15,10 +15,7 @@ const productoCafeSchema = productoComunSchema.extend({
   tipo: z.enum(['expreso', 'filtrado']),
   tamanio: z.enum(['pocillo', 'mediano', 'taza_grande']),
   gramosCafe: z.number().positive(),
-  variedad: z.object({
-    nombre: z.string().min(1),
-    descripcion: z.string().min(1),
-  }),
+  variedad: variedadCafeSchema,
 });
 
 const productoPasteleriaSchema = productoComunSchema.extend({

@@ -1,16 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import type { Producto } from '../schemas/producto';
 import { buscarCafe } from '../utils/buscarCafe';
-
-const formatoPrecio = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  maximumFractionDigits: 0,
-});
+import { formatearPrecio } from '../utils/precio';
 
 type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
-
-type VariedadCafe = 'brasil' | 'colombia' | 'etiopia';
 
 const tiposCafe: { valor: Cafe['tipo']; etiqueta: string }[] = [
   { valor: 'expreso', etiqueta: 'Expreso' },
@@ -36,7 +29,7 @@ type CafeSelectorProps = {
 
 export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps) {
   const [tipoSeleccionado, setTipoSeleccionado] = useState<Cafe['tipo'] | null>(null);
-  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamano'] | null>(null);
+  const [tamanoSeleccionado, setTamanoSeleccionado] = useState<Cafe['tamanio'] | null>(null);
   const [variedadSeleccionada, setVariedadSeleccionada] = useState<
     Cafe['variedad']['nombre'] | null
   >(null);
@@ -112,7 +105,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                 {variedadesCafe.map(({ valor, etiqueta }) => {
                   const producto = buscarCafe(productos, {
                     tipo: tipoSeleccionado,
-                    tamano: tamanoSeleccionado,
+                    tamanio: tamanoSeleccionado,
                     variedad: valor,
                   });
 
@@ -130,7 +123,7 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
                         <div>
                           <p className='small mb-0'>{producto.variedad.descripcion}</p>
                           <p className='small fw-semibold mb-0'>
-                            {formatoPrecio.format(producto.precio)}
+                            {formatearPrecio(producto.precio)}
                           </p>
                         </div>
                       )}
@@ -151,29 +144,24 @@ export default function CafeSelector({ productos, onAgregar }: CafeSelectorProps
           <div className='card-body d-flex flex-column flex-sm-row justify-content-between gap-3'>
             <div>
               <p className='small fw-semibold text-secondary text-uppercase mb-1'>Tu selección</p>
-              <h4 id='cafe-seleccionado-title' className='card-title h5 mb-2'>
+              <h4 id='cafe-seleccionado-title' className='card-title h5 mb-0'>
                 {cafeSeleccionado.nombre}
               </h4>
             </div>
-              <p className='text-secondary mb-2'>{cafeSeleccionado.variedad.descripcion}</p>
-              <button
-                type='button'
-                className='btn btn-primary'
-                disabled={!cafeSeleccionado}
-                onClick={() => {
-                  if (cafeSeleccionado) onAgregar(cafeSeleccionado);
-                }}
-              >
-                Agregar al pedido
-              </button>
-            </div>
-            <p className='h4 fw-bold text-primary mb-0 align-self-sm-center'>
-              {formatoPrecio.format(cafeSeleccionado.precio)}
-            </p>
           </div>
         </article>
       )}
-      
+
+      <button
+        type='button'
+        className='btn btn-primary mt-3'
+        disabled={!cafeSeleccionado}
+        onClick={() => {
+          if (cafeSeleccionado) onAgregar(cafeSeleccionado);
+        }}
+      >
+        Agregar al pedido
+      </button>
     </div>
   );
 }

@@ -1,8 +1,16 @@
-export type PedidoCreado = {
-  id: number;
-  estado: string;
-  total: number;
-};
+import { pedidoSchema, type PedidoCreado } from '../schemas/pedido';
+
+export type { PedidoCreado };
+
+function validarPedido(cuerpo: unknown): PedidoCreado {
+  const resultado = pedidoSchema.safeParse(cuerpo);
+
+  if (!resultado.success) {
+    throw new Error('La respuesta de la API no cumple el contrato de pedido');
+  }
+
+  return resultado.data;
+}
 
 export async function crearPedido(datos: {
   mesaId?: number;
@@ -27,7 +35,7 @@ export async function crearPedido(datos: {
     throw new Error(mensaje);
   }
 
-  return respuesta.json();
+  return validarPedido(await respuesta.json());
 }
 
 export async function obtenerPedido(id: number): Promise<PedidoCreado> {
@@ -37,5 +45,5 @@ export async function obtenerPedido(id: number): Promise<PedidoCreado> {
     throw new Error('No se pudo consultar el pedido');
   }
 
-  return respuesta.json();
+  return validarPedido(await respuesta.json());
 }

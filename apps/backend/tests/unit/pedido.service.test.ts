@@ -22,7 +22,11 @@ describe('PedidoService', () => {
         id,
         nombre: `Producto ${id}`,
         precioBase: 150,
+        getId: () => id,
+        getNombre: () => `Producto ${id}`,
+        getTipo: () => 'espresso' as const,
         calcularPrecio: () => 150,
+        toJSON: () => ({ id, nombre: `Producto ${id}`, tipo: 'espresso', precio: 150 }),
       })),
     };
     pedidoService = new PedidoService(pedidosRepository, productosRepository);
