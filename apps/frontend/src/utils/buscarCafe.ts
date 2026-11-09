@@ -1,11 +1,11 @@
 import type { Producto } from '../schemas/producto';
 
-type Cafe = Exclude<Producto, { tipo: "pasteleria" }>;
+type Cafe = Exclude<Producto, { tipo: 'pasteleria' }>;
 
 type CaracteristicasCafe = {
-  tipo: Cafe["tipo"];
-  tamanio: Cafe["tamano"];
-  variedad: Cafe["variedad"]["nombre"];
+  tipo: Cafe['tipo'];
+  tamanio: Cafe['tamanio'];
+  variedad: Cafe['variedad']['nombre'];
 };
 
 function normalizar(valor: string): string {
