@@ -14,6 +14,15 @@ export class ProductoNoEncontradoError extends Error {
   }
 }
 
+export class MesaNoEncontradaError extends Error {
+  constructor(mesaId: number) {
+    super(`Mesa ${mesaId} no encontrada`);
+    this.name = 'MesaNoEncontradaError';
+  }
+}
+
+const MESAS_HABILITADAS = 20;
+
 export interface PedidoConTotal {
   id: number;
   items: PedidoItem[];
@@ -59,6 +68,15 @@ export class PedidoService implements IPedidoService {
   }
 
   crear(pedido: NuevoPedido): PedidoConTotal {
+    if (
+      pedido.mesaId !== undefined &&
+      (!Number.isInteger(pedido.mesaId) ||
+        pedido.mesaId < 1 ||
+        pedido.mesaId > MESAS_HABILITADAS)
+    ) {
+      throw new MesaNoEncontradaError(pedido.mesaId);
+    }
+
     const productos = new Map<number, ProductoConPrecio>();
 
     pedido.items.forEach((item) => {
