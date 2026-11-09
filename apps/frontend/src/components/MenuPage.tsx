@@ -14,8 +14,6 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
   maximumFractionDigits: 0,
 });
 
-
-
 function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
@@ -25,7 +23,6 @@ function MenuPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
-  // const { dispatch } = useCarrito();
   const productosPasteleria = productos.filter((producto) => producto.tipo === 'pasteleria');
 
   const agregarAlPedido = useCallback(
@@ -44,21 +41,26 @@ function MenuPageContent() {
   );
 
   const confirmarPedido = useCallback(async () => {
-  setErrorPedido(null);
-  try {
-    const creado = await crearPedido({
-      mesa: Number(mesaInput),
-      items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
-    });
+    setErrorPedido(null);
+    try {
+      const creado = await crearPedido({
+        ...(mesa !== null ? { mesaId: mesa } : {}),
+        items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),
+      });
 
-    dispatch({ type: 'clear' });
-    setPedido(creado);
-  } catch (error: unknown) {
-    setErrorPedido(
-      error instanceof Error ? error.message : 'No se pudo confirmar el pedido',
-    );
-  }
-}, [dispatch, items, mesaInput]);
+      dispatch({ type: 'clear' });
+      setPedido(creado);
+    } catch (error: unknown) {
+      setErrorPedido(error instanceof Error ? error.message : 'No se pudo confirmar el pedido');
+    }
+  }, [dispatch, items, mesa]);
+
+  const actualizarEstado = useCallback(async () => {
+    if (!pedido) return;
+
+    const actualizado = await obtenerPedido(pedido.id);
+    setPedido(actualizado);
+  }, [pedido]);
 
   const cargarProductos = useCallback(() => {
     setLoading(true);
@@ -96,7 +98,9 @@ function MenuPageContent() {
                 )}
                 {!loading && error && (
                   <div className='alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3'>
-                    <p role='alert' className='mb-0'>No se pudieron cargar los productos</p>
+                    <p role='alert' className='mb-0'>
+                      No se pudieron cargar los productos
+                    </p>
                     <button type='button' className='btn btn-primary' onClick={cargarProductos}>
                       Reintentar
                     </button>
@@ -146,17 +150,16 @@ function MenuPageContent() {
                     <p className='mb-0'>Estado: {pedido.estado}</p>
                     <p className='mb-0'>Total: {formatoPrecio.format(pedido.total)}</p>
                     <button
-                    type='button'
-                    className='btn btn-outline-primary mt-3'
-                    onClick={actualizarEstado}
-                  >
-                    Actualizar estado
-                  </button>
+                      type='button'
+                      className='btn btn-outline-primary mt-3'
+                      onClick={actualizarEstado}
+                    >
+                      Actualizar estado
+                    </button>
                   </div>
                 </section>
               ) : (
                 <>
-
                   <div className='mt-4'>
                     {errorPedido && (
                       <p className='alert alert-danger' role='alert'>
