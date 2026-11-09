@@ -20,6 +20,7 @@ function MenuPageContent() {
   const mesa = leerMesaDesdeUrl(window.location.search);
   const [pedido, setPedido] = useState<PedidoCreado | null>(null);
   const [errorPedido, setErrorPedido] = useState<string | null>(null);
+  const [errorEstado, setErrorEstado] = useState<string | null>(null);
   const { dispatch, items } = useCarrito();
   const [menu, setMenu] = useState<EstadoMenu>({ estado: 'cargando' });
   const [confirmado, setConfirmado] = useState(false);
@@ -59,8 +60,15 @@ function MenuPageContent() {
   const actualizarEstado = useCallback(async () => {
     if (!pedido) return;
 
-    const actualizado = await obtenerPedido(pedido.id);
-    setPedido(actualizado);
+    setErrorEstado(null);
+    try {
+      const actualizado = await obtenerPedido(pedido.id);
+      setPedido(actualizado);
+    } catch (error: unknown) {
+      setErrorEstado(
+        error instanceof Error ? error.message : 'No se pudo actualizar el estado del pedido',
+      );
+    }
   }, [pedido]);
 
   const cargarProductos = useCallback(() => {
@@ -155,6 +163,11 @@ function MenuPageContent() {
                     >
                       Actualizar estado
                     </button>
+                    {errorEstado && (
+                      <p className='alert alert-danger mt-3 mb-0' role='alert'>
+                        {errorEstado}
+                      </p>
+                    )}
                   </div>
                 </section>
               ) : (
