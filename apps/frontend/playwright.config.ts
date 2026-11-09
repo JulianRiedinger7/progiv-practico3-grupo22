@@ -20,9 +20,9 @@ export default defineConfig({
       ? []
       : [
           {
-            command: "pnpm start:test",
+            command: "npm run start:test",
             cwd: "../backend",
-            url: `${apiURL}/health`,
+            url: `${apiURL}/productos`,
             reuseExistingServer: false,
             env: {
               SQLITE_DATABASE_PATH: ":memory:",
@@ -33,7 +33,7 @@ export default defineConfig({
       ? []
       : [
           {
-            command: "pnpm dev -- --host 127.0.0.1",
+            command: "npm run dev -- --host 127.0.0.1",
             url: webURL,
             reuseExistingServer: false,
             env: {
@@ -43,4 +43,3 @@ export default defineConfig({
         ]),
   ],
 });
-
