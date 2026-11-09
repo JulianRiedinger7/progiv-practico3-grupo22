@@ -199,6 +199,7 @@ describe('MenuPage integración con API simulada', () => {
             id: 2,
             nombre: 'Muffin de chocolate',
             tipo: 'pasteleria',
+            precioBase: 2500,
             precio: 2500,
             variedad: 'muffin_chocolate',
           },
@@ -211,12 +212,13 @@ describe('MenuPage integración con API simulada', () => {
 
     render(<MenuPage />);
 
-    await user.click(await screen.findByRole('button', { name: 'Agregar al pedido' }));
+    const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+    await user.click(within(pasteleria).getByRole('button', { name: 'Agregar al pedido' }));
     await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('La mesa no existe');
     expect(screen.getByText('Cantidad: 1')).toBeInTheDocument();
-    expect(screen.getByText('Muffin de chocolate')).toBeInTheDocument();
+    expect(screen.getAllByText('Muffin de chocolate')).toHaveLength(2);
   });
 
   it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
@@ -261,4 +263,3 @@ describe('MenuPage integración con API simulada', () => {
   });
 });
 });
-

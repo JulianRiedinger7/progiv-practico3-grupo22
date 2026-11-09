@@ -15,7 +15,16 @@ export async function crearPedido(datos: {
   });
 
   if (!respuesta.ok) {
-    throw new Error('No se pudo confirmar el pedido');
+    const cuerpo: unknown = await respuesta.json();
+    const mensaje =
+      typeof cuerpo === 'object' &&
+      cuerpo !== null &&
+      'error' in cuerpo &&
+      typeof cuerpo.error === 'string'
+        ? cuerpo.error
+        : `La API rechazó el pedido (${respuesta.status})`;
+
+    throw new Error(mensaje);
   }
 
   return respuesta.json();
