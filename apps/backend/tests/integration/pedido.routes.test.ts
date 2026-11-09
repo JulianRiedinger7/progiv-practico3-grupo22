@@ -115,4 +115,18 @@ describe('Rutas de pedidos', () => {
       total: 5020,
     });
   });
+
+  it('POST /pedidos rechaza una mesa inexistente con error 400 o 404 sin guardar el pedido', async () => {
+    const respuesta = await request(app)
+      .post('/pedidos')
+      .send({ items: [{ productoId: 1, cantidad: 1 }], mesaId: 999 });
+
+    expect([400, 404]).toContain(respuesta.status);
+    expect(respuesta.body).toEqual({ error: 'La mesa no existe' });
+
+    const resultado = app.locals.db.prepare('SELECT COUNT(*) AS cantidad FROM pedidos').get() as {
+      cantidad: number;
+    };
+    expect(resultado.cantidad).toBe(0);
+  });
 });
