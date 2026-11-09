@@ -245,6 +245,38 @@ describe('MenuPage integración con API simulada', () => {
     expect(screen.getAllByText('Muffin de chocolate')).toHaveLength(2);
   });
 
+  it('muestra un error y conserva el carrito si la respuesta al crear el pedido no cumple el contrato', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          {
+            id: 2,
+            nombre: 'Muffin de chocolate',
+            tipo: 'pasteleria',
+            precio: 2500,
+            variedad: 'muffin_chocolate',
+          },
+        ]),
+      ),
+      http.post('*/api/pedidos', () =>
+        HttpResponse.json({ id: 15, total: 'mucho' }, { status: 201 }),
+      ),
+    );
+
+    window.history.pushState({}, '', '/');
+    render(<MenuPage />);
+
+    const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
+    await user.click(within(pasteleria).getByRole('button', { name: 'Agregar al pedido' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByText(/Pedido N°/)).not.toBeInTheDocument();
+    expect(screen.getByText('Cantidad: 1')).toBeInTheDocument();
+  });
+
   it('confirma el pedido y muestra número, mesa, estado y total devueltos por la API', async () => {
     const user = userEvent.setup();
     let pedidoIdConsultado: string | null = null;
