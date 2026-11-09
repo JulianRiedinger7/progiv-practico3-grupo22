@@ -68,7 +68,9 @@ describe('MenuPage integración con API simulada', () => {
     expect(screen.getByText(/2\.500/)).toBeInTheDocument();
     expect(screen.getByText(/4\.200/)).toBeInTheDocument();
     const pasteleria = await screen.findByRole('region', { name: 'Pastelería' });
-    expect(within(pasteleria).getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(2);
+    expect(within(pasteleria).getAllByRole('button', { name: 'Agregar al pedido' })).toHaveLength(
+      2,
+    );
   });
 
   it('muestra un producto devuelto por la API después de completar su selección', async () => {
@@ -134,6 +136,34 @@ describe('MenuPage integración con API simulada', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'No se pudieron cargar los productos',
     );
+  });
+
+  it('muestra un mensaje de error cuando la API no responde', async () => {
+    server.use(http.get('*/api/productos', () => HttpResponse.error()));
+
+    render(<MenuPage />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudieron cargar los productos',
+    );
+    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument();
+  });
+
+  it('muestra un mensaje de error cuando la respuesta de productos no cumple el contrato', async () => {
+    server.use(
+      http.get('*/api/productos', () =>
+        HttpResponse.json([
+          { id: 1, nombre: 'Café raro', tipo: 'bebida_desconocida', precio: 'gratis' },
+        ]),
+      ),
+    );
+
+    render(<MenuPage />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudieron cargar los productos',
+    );
+    expect(screen.queryByText('Café raro')).not.toBeInTheDocument();
   });
 
   it('permite reintentar la carga de productos después de un error', async () => {
